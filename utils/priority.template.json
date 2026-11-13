@@ -1,14 +1,14 @@
 [
     {
         "id": "1",
-        "level": "high"
+        "level": "High"
     },
     {
         "id": "2",
-        "level": "medium"
+        "level": "Medium"
     },
     {
         "id": "3",
-        "level": "low"
+        "level": "Low"
     }
 ]

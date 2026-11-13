@@ -1,0 +1,11 @@
+class Category {
+    constructor(name) {
+        const timestamp = new Date().getTime();
+        const random = Math.floor(Math.random() * 1000);
+
+        this.id = "c" + timestamp + "" + random.toString().padStart(3, '0');
+        this.name = name;
+    }
+}
+
+module.export = {Category};

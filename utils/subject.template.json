@@ -1,26 +1,35 @@
 [
     {
         "id": "1",
-        "name": "itad"
+        "name": "ITAD"
     },
         {
         "id": "2",
-        "name": "mldp"
+        "name": "MLDP"
     },
         {
         "id": "3",
-        "name": "fweb"
+        "name": "FWEB"
     },
     {
         "id": "4",
-        "name": "dvops"
+        "name": "DVOPS"
     },
     {
         "id": "5",
-        "name": "cmath"
+        "name": "CMATH"
     },
     {
         "id": "6",
-        "name": "procomm"
+        "name": "PROCOMM"
+    },
+    {
+        "id": "7",
+        "name": "GL"
+    },
+    {
+        "id": "8",
+        "name": "SCA"
     }
+    
 ]

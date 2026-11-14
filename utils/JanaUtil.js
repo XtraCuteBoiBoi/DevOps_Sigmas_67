@@ -6,7 +6,6 @@ const tasks_file = path.join('utils', 'tasks.json');
 // Template containing sample tasks
 const template_file = path.join('utils', 'task.template.json');
 
-
 // 1. Sort tasks by alphabetical order (ascending, A-Z, or descending, Z-A)
 function sortByName(tasks, order) {
     // Create a copy so the original task array is unchanged
@@ -14,11 +13,7 @@ function sortByName(tasks, order) {
 
     // Sort tasks by their names
     sortedTasks.sort((a, b) => {
-        const comparison = a.name.localeCompare(
-            b.name,
-            undefined,
-            { sensitivity: 'base' }
-        );
+        const comparison = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
 
         // Reverse the comparison for descending order
         return order === 'desc' ? -comparison : comparison;
@@ -27,25 +22,18 @@ function sortByName(tasks, order) {
     return sortedTasks;
 }
 
-
 // 2. Sort tasks by priority (High to Low or Low to High)
 function sortByPriority(tasks, order) {
     // Define the priority order
     // Lower numbers represent higher priority
-    const priorityOrder = {
-        'High': 1,
-        'Medium': 2,
-        'Low': 3
-    };
+    const priorityOrder = {'High': 1, 'Medium': 2, 'Low': 3};
 
     // Create a copy so the original task array is unchanged
     const sortedTasks = [...tasks];
 
     // Sort tasks by their priority names
     sortedTasks.sort((a, b) => {
-        const comparison =
-            priorityOrder[a.priorityId] -
-            priorityOrder[b.priorityId];
+        const comparison = priorityOrder[a.priorityId] - priorityOrder[b.priorityId];
 
         // Reverse the comparison for descending order
         return order === 'desc' ? -comparison : comparison;
@@ -54,8 +42,43 @@ function sortByPriority(tasks, order) {
     return sortedTasks;
 }
 
+// 3. Sort tasks chronologically using year, month, and hour (ascending, earliest to latest, or descending, latest to earliest)
+function sortByDate(tasks, order) {
+    //Define the order of months
+    const months = {'Jan': 1, 'Feb': 2, 'Mar':3, 'Apr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12};
+    
+    // Create a copy so the original task array is unchanged
+    const sortedTasks = [...tasks];
 
-// 3. Main function to handle sorting requests
+    sortedTasks.sort((a, b) => {
+        // Compare year first
+        let compare = Number(a.year) - Number(b.year);
+
+        // If years are the same, compare the months instead
+        if (compare === 0) {
+            compare = months[a.month] - months[b.month];
+        }
+
+        // If years and months are the same, compare the hours instead
+        if (compare === 0) {
+            // Convert HH:MM into minutes for comparison
+            const [hourA, minuteA] = a.hour.split(':').map(Number);
+            const [hourB, minuteB] = b.hour.split(':').map(Number);
+
+            const timeA = hourA * 60 + minuteA;
+            const timeB = hourB * 60 + minuteB;
+
+            comparison = timeA - timeB;        
+        }
+
+        // Reverse the comparison for descending order
+        return order === 'desc' ? -compare : compare;
+    });
+
+    return sortedTasks;
+}
+
+// Main function to handle sorting requests
 async function sortTasks(req, res) {
     try {
         // Get the sorting field and order from the URL
@@ -64,17 +87,15 @@ async function sortTasks(req, res) {
         const order = req.query.order || 'asc';
 
         // Check whether the sorting field is valid
-        if (sortBy !== 'name' && sortBy !== 'priority') {
+        if (sortBy !== 'name' && sortBy !== 'priority' && sortBy !== 'date') {
             return res.status(400).json({
-                message: 'Invalid sorting field. Use name or priority.'
+                message: 'Invalid sorting field. Use name, priority or date.'
             });
         }
 
         // Check whether the sorting order is valid
         if (order !== 'asc' && order !== 'desc') {
-            return res.status(400).json({
-                message: 'Invalid sorting order. Use asc or desc.'
-            });
+            return res.status(400).json({message: 'Invalid sorting order. Use asc or desc.'});
         }
 
         let tasks = [];
@@ -86,12 +107,8 @@ async function sortTasks(req, res) {
 
         } catch (err) {
             if (err.code === 'ENOENT') {
-                // If tasks.json does not exist yet,
-                // load the tasks from the template
-                const templateData = await fs.readFile(
-                    template_file,
-                    'utf8'
-                );
+                // If tasks.json does not exist yet, load the tasks from the template
+                const templateData = await fs.readFile(template_file, 'utf8');
 
                 tasks = JSON.parse(templateData);
             } else {
@@ -107,6 +124,9 @@ async function sortTasks(req, res) {
 
         } else if (sortBy === 'priority') {
             sortedTasks = sortByPriority(tasks, order);
+
+        } else if (sortBy === 'date') {
+            sortedTasks = sortByDate(tasks, order);
         }
 
         // Return the sorted tasks as JSON
@@ -114,13 +134,9 @@ async function sortTasks(req, res) {
 
     } catch (error) {
         console.error(error);
-
-        return res.status(500).json({
-            message: error.message
-        });
+        return res.status(500).json({message: error.message});
     }
 }
-
 
 // Export the main function for use in index.js
 module.exports = { sortTasks };

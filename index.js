@@ -8,12 +8,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("./public"));
 
+const { sortTasks } = require('./utils/JanaUtil');
+app.get('/tasks', sortTasks);
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + "/public/" + startPage);
 })
-
-
-
 
 server = app.listen(PORT, function () {
     const address = server.address();

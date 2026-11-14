@@ -4,6 +4,8 @@ var app = express();
 const PORT = process.env.PORT || 5050
 var startPage = "index.html";
 
+const { viewTask, editTask } = require('./utils/WeiYeUtil');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("./public"));
@@ -11,6 +13,10 @@ app.use(express.static("./public"));
 app.get('/', (req, res) => {
     res.sendFile(__dirname + "/public/" + startPage);
 })
+
+
+// app.put('/view-task/', viewTask)
+app.put('/edit-task/:id', editTask)
 
 
 

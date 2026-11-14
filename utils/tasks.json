@@ -3,10 +3,10 @@
     {
         "id": "t001",
         "name": "Revise Mathematics",
-        "categoryId": "Academic",
-        "subjectId": "CMATH",
-        "priorityId": "Medium",
-        "statusId": "Pending",
+        "categoryId": "2",
+        "subjectId": "5",
+        "priorityId": "2",
+        "statusId": "2",
         "month": "Nov",
         "year": "2026",
         "hour": "14:00"
@@ -14,10 +14,10 @@
     {
         "id": "t002",
         "name": "Complete DevOps Report",
-        "categoryId": "Academic",
-        "subjectId": "DVOPS",
-        "priorityId": "High",
-        "statusId": "Pending",
+        "categoryId": "2",
+        "subjectId": "4",
+        "priorityId": "1",
+        "statusId": "2",
         "month": "Dec",
         "year": "2026",
         "hour": "10:00"
@@ -25,12 +25,34 @@
     {
         "id": "t003",
         "name": "Buy Groceries",
-        "categoryId": "Personal",
+        "categoryId": "1",
         "subjectId": null,
-        "priorityId": "Low",
-        "statusId": "Pending",
+        "priorityId": "3",
+        "statusId": "2",
         "month": "Jan",
         "year": "2027",
         "hour": "17:00"
+    },
+    {
+        "id": "t004",
+        "name": "Submit FWEB Assignment",
+        "categoryId": "2",
+        "subjectId": "3",
+        "priorityId": "1",
+        "statusId": "1",
+        "month": "Oct",
+        "year": "2026",
+        "hour": "23:59"
+    },
+    {
+        "id": "t005",
+        "name": "Organise Study Notes",
+        "categoryId": "2",
+        "subjectId": "2",
+        "priorityId": "3",
+        "statusId": "3",
+        "month": "Feb",
+        "year": "2027",
+        "hour": "09:00"
     }
 ]

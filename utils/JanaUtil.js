@@ -24,16 +24,14 @@ function sortByName(tasks, order) {
 
 // 2. Sort tasks by priority (High to Low or Low to High)
 function sortByPriority(tasks, order) {
-    // Define the priority order
-    // Lower numbers represent higher priority
-    const priorityOrder = {'High': 1, 'Medium': 2, 'Low': 3};
-
     // Create a copy so the original task array is unchanged
     const sortedTasks = [...tasks];
 
-    // Sort tasks by their priority names
+    // Sort tasks by their priority IDs
+    // 1 = High, 2 = Medium, 3 = Low
     sortedTasks.sort((a, b) => {
-        const comparison = priorityOrder[a.priorityId] - priorityOrder[b.priorityId];
+        const comparison =
+            Number(a.priorityId) - Number(b.priorityId);
 
         // Reverse the comparison for descending order
         return order === 'desc' ? -comparison : comparison;

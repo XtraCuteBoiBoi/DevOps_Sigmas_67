@@ -11,9 +11,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- External CSS -->
     <link rel="stylesheet" href="css/styles.css">
+    <script src="./js/jorell.js"></script>
+    <script src="./js/weiye.js"></script>
+    <script src="./js/jana.js"></script>
 </head>
 
-<body>
+<body onload="viewTask()">
     <div class="page-layout">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -96,34 +99,41 @@
                         </thead>
                         <!-- Task rows to be inserted using JavaScript -->
                         <tbody id="taskTableBody">
-                            <!-- Example:
-                            <tr>
-                                <td>Icon</td>
-                                <td>Complete DevOps Report</td>
-                                <td>Academic</td>
-                                <td>High</td>
-                                <td>Pending</td>
-                                <td>Dec 2026, 10:00</td>
-                                <td>
-                                    TODO: wei ye to implement Edit and Delete buttons
-                                </td>
-                            </tr>
-                            -->
+                            
+                            <!-- add delete button -jorell -->
+
                         </tbody>
                     </table>
                 </div>
+                                           
+                <div id="noTaskTxt" >
+                    <span style="font-size: 1.2rem; display: flex; justify-content: center;">No task to display. Create a task to display in here</span>
+                </div>
+
             </section>
 
             <!-- Pagination -->
             <div class="pagination">
-                <button id="previousPage" type="button">&lt;</button>
-                <span id="paginationInfo">Showing 0-0 of 0 tasks</span>
-                <button id="nextPage" type="button">&gt;</button>
+                <!-- prev page button -->
+                <button id="previousPage" type="button" onclick="prevPage()">&lt;</button>
+                <!-- show list index of total tasks -->
+                <div id="paginationInfo">
+                    <span>Showing
+                        <span id="currentDisplayedValue">
+                            0-0
+                        </span>
+                        <span>of</span>
+                        <span id="totalTaskValue">
+                            0
+                        </span>
+                        <span>tasks</span> 
+                    </span>
+                </div>
+                <!-- next page button -->
+                <button id="nextPage" type="button" onclick="nextPage()">&gt;</button>
 
             </div>
         </main>
     </div>
-    <!-- Frontend JavaScript -->
-    <!-- TODO: jorell and wei ye to link your frontend JS files here -->
 </body>
 </html>

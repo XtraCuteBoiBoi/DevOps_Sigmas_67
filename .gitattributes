@@ -1,0 +1,73 @@
+
+# Additional Feature 1 (Jana): Git Attributes
+# Purpose: it standardise how Git handles different file types across all team members (me, Wei Ye, and Jorell) working on this repository. This helps prevent unnecessary changes caused by different operating systems and ensures consistent file handling
+
+
+# 1. automatic text file detection 
+# self explanatory: Automatically detect whether a file contains text.
+# Git will normalise detected text files to LF line endings when storing them in the repository. This reduces line-ending inconsistencies between Windows, macOS, and Linux users.
+* text=auto
+
+
+# 2. standardise source code line endings
+# Explicitly mark the file types below as text files.
+# eol=lf ensures that these files use LF (Line Feed) line endings in the working directory.
+# Windows commonly uses CRLF (Carriage Return + Line Feed), while macOS and Linux typically use LF. Using LF consistently helps prevent unnecessary Git diffs caused by line-ending differences rather than code changes
+
+# JavaScript source files
+*.js text eol=lf
+
+# React JavaScript component files
+*.jsx text eol=lf
+
+# TypeScript source files
+*.ts text eol=lf
+
+# React TypeScript component files
+*.tsx text eol=lf
+
+# JSON configuration and data files
+*.json text eol=lf
+
+# CSS stylesheets
+*.css text eol=lf
+
+# HTML files
+*.html text eol=lf
+
+# Markdown documentation files
+*.md text eol=lf
+
+
+# 3. handle image files as binary (e.g. PNG, JPEG, GIF, ICO, WebP)
+# Images contain binary data rather than plain text. Marking them as binary prevents Git from attempting text-based comparisons and line-ending conversions
+# (Git can still track changes to these files, but it will not display ordinary line-by-line text differences)
+
+# PNG images
+*.png binary
+
+# JPEG images
+*.jpg binary
+*.jpeg binary
+
+# GIF images
+*.gif binary
+
+# Icon files
+*.ico binary
+
+# WebP images
+*.webp binary
+
+
+# 4. handle document files as binary (e.g. PDF, DOCX, XLSX)
+# The document formats below should NOT undergo text-based line-ending normalisation. Marking them as binary helps preserve their contents and avoids meaningless text-based Git diffs.
+
+# PDF documents
+*.pdf binary
+
+# Microsoft Word documents
+*.docx binary
+
+# Microsoft Excel spreadsheets
+*.xlsx binary

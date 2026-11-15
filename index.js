@@ -12,6 +12,10 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + "/public/" + startPage);
 })
 
+// GET API - Wei Ye
+const { viewTasks } = require('./utils/WeiYeUtil');
+app.get('/view-tasks', viewTasks)
+
 
 
 

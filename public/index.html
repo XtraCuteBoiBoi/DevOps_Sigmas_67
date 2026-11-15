@@ -107,19 +107,30 @@
                 </div>
                                            
                 <div id="noTaskTxt" >
-                    <span style="font-size: 1.2rem;">No task to display. Create a task to display it</span>
+                    <span style="font-size: 1.2rem; display: flex; justify-content: center;">No task to display. Create a task to display in here</span>
                 </div>
 
             </section>
 
             <!-- Pagination -->
             <div class="pagination">
-                <button id="previousPage" type="button">&lt;</button>
+                <!-- prev page button -->
+                <button id="previousPage" type="button" onclick="prevPage()">&lt;</button>
+                <!-- show list index of total tasks -->
                 <div id="paginationInfo">
-                    <span>Showing <span id="currentDisplayedValue">0-0</span> of <span id="totalTaskValue">0</span> tasks</span>
+                    <span>Showing
+                        <span id="currentDisplayedValue">
+                            0-0
+                        </span>
+                        <span>of</span>
+                        <span id="totalTaskValue">
+                            0
+                        </span>
+                        <span>tasks</span> 
+                    </span>
                 </div>
-                
-                <button id="nextPage" type="button">&gt;</button>
+                <!-- next page button -->
+                <button id="nextPage" type="button" onclick="nextPage()">&gt;</button>
 
             </div>
         </main>

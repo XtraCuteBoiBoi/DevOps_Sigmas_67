@@ -19,6 +19,15 @@ button {
     background-color: #b85d72;
 }
 
+svg {
+    width: 20px;
+    height: 20px;
+}
+
+path {
+    stroke-width: 2;
+}
+
 /* Main Layout */
 .page-layout {
     display: flex;
@@ -194,16 +203,38 @@ button {
     font-weight: 700;
 }
 
+.statusBtn {
+    padding: 8px 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+    
+}
+
 .status-pending {
-    color: #b85d72;
+    background-color: #b98202;
+
+    &:hover {
+       background-color: #8c6201; 
+    }
 }
 
 .status-completed {
-    color: #347452;
+    background-color: #1b9300;
+
+    &:hover {
+        background-color: #146c00;
+    }
 }
 
 .status-overdue {
-    color: #a34343;
+    background-color: #b90202;
+
+    &:hover {
+        background-color: #8f0000;
+    }
 }
 
 /* Action Buttons */

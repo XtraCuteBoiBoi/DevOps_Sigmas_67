@@ -2,7 +2,7 @@ const fs = require('fs').promises;
 const path = require('path');
 
 // File containing the saved tasks
-const tasks_file = path.join('utils', 'tasks.json');
+const tasks_file = path.join('utils', 'task.json');
 // Template containing sample tasks
 const template_file = path.join('utils', 'task.template.json');
 

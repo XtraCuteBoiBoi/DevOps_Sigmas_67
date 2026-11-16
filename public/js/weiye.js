@@ -106,14 +106,14 @@ function dynamicDisplayTasks(tasks) {
         task = tasks[i]
 
         // check if any fields are missing
-        if(task.id == undefined ||
-            task.name == undefined ||
-            task.categoryId == undefined ||
-            task.priorityId == undefined ||
-            task.statusId == undefined ||
-            task.month == undefined ||
-            task.year == undefined ||
-            task.hour == undefined
+        if(task.id === undefined ||
+            task.name === undefined ||
+            task.categoryId === undefined ||
+            task.priorityId === undefined ||
+            task.statusId === undefined ||
+            task.month === undefined ||
+            task.year === undefined ||
+            task.hour === undefined
         ) {
             var divEle = document.getElementById('noTaskTxtWrapper');
             var spanEle = document.getElementById('noTaskTxt');
@@ -287,7 +287,7 @@ function displayDynamicPageNumber() {
     var currentPageEle = document.getElementById('currentDisplayedValue');
     var totalTaskEle = document.getElementById('totalTaskValue');
 
-    if(allTasks < 1) {
+    if(allTasks.length < 1) {
         startIndex = 0;
         endIndex = 0
     }

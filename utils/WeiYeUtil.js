@@ -19,6 +19,22 @@ async function viewTasks(req, res) {
             return res.status(400).json({ message: 'Invalid JSON structure' })
         }
 
+        // iterate the list to get each item
+        for(var i = 0; i < allTasks.length; i++) {
+            // check if there is missing field(s) of a task
+            if(allTasks[i].id === undefined ||
+                allTasks[i].name === undefined ||
+                allTasks[i].categoryId === undefined ||
+                allTasks[i].priorityId === undefined ||
+                allTasks[i].statusId === undefined ||
+                allTasks[i].month === undefined ||
+                allTasks[i].year === undefined ||
+                allTasks[i].hour === undefined
+            ) {
+                return res.status(400).json({ message: 'Missing data field(s) of a task!' });
+            }
+        }
+
         return res.status(200).json(allTasks);
 
     } catch (error) {

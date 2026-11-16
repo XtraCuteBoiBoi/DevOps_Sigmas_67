@@ -121,7 +121,7 @@ function dynamicDisplayTasks(tasks) {
             totalTaskValue(0)
             // display text
             divEle.style.display = "block"
-            spanEle.innerText = "Missing data fields! Could not display the data."
+            spanEle.innerText = "Missing data fields! Could not display data properly."
             return;
         }
 

@@ -98,8 +98,6 @@ function dynamicDisplayTasks(tasks) {
     tableEle.style.display = "block";
     divEle.style.display = "none";
 
-    console.log('task',tasks)
-
     for(var i = 0; i < tasks.length; i++) {
 
         // store the item into a variable

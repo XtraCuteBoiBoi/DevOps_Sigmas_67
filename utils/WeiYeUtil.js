@@ -8,7 +8,7 @@ async function viewTasks(req, res) {
     try {
         const data = await fs.readFile(TASK_FILE, 'utf8');
 
-        // if no data in json file (e.g. file existed but not value inside the file)
+        // if no data in json file (e.g. file existed but no content inside the file)
         if(!data) {
             return res.status(400).json({ message: 'Empty JSON file'})
         }

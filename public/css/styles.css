@@ -17,6 +17,7 @@ body {
 
 button {
     background-color: #b85d72;
+    border-radius: 10px;
 }
 
 svg {
@@ -27,6 +28,8 @@ svg {
 path {
     stroke-width: 2;
 }
+
+
 
 /* Main Layout */
 .page-layout {
@@ -292,4 +295,82 @@ path {
 #paginationInfo {
     font-size: 14px;
     font-weight: 700;
+}
+
+/* Update Modal Styling */
+.modal-wrapper {
+    position: absolute;
+    background-color: var(--primary-colour);
+    border: 2px solid black;
+    border-radius: 10px;
+    width: 40%;
+    height: 92vh;
+    top: 3vh;
+    margin: 0 32%;
+    padding: 1.5rem;
+}
+
+.modal-header {
+    display: flex; 
+    justify-content: center; 
+    position: relative;
+}
+
+.modal-header-text {
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.modal-header button {
+    display: flex;
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-header button:hover {
+    background-color: var(--hover-colour);
+}
+
+.modal-header button svg {
+    width: 26px;
+    height: 26px;
+}
+
+.modal-wrapper input, .modal-wrapper select {
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.modal-wrapper select:focus, .modal-wrapper input:focus {
+    outline: none;
+}
+
+.edit-input-container {
+    margin-top: 3%;
+}
+
+.edit-input-container button {
+    padding: 10px 14px;
+    color: var(--primary-colour);
+    cursor: pointer;
+    border: none;
+}
+
+.edit-input-container button:hover {
+    background-color: var(--hover-colour);
+}
+
+/* container for each input */
+.input-container {
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+
+    & label {
+        font-size: 1rem;
+        margin-bottom: 0.2rem;
+    }
 }

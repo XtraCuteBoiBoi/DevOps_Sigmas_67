@@ -4,6 +4,8 @@ const TASK_FILE = path.join('utils', 'task.json');
 
 // set as async function as in express 5 version automatically catches error in async function
 // but still use try catch for more explicitly handle errors
+
+// view task
 async function viewTasks(req, res) {
     try {
         const data = await fs.readFile(TASK_FILE, 'utf8');
@@ -54,4 +56,106 @@ async function viewTasks(req, res) {
     }
 }
 
-module.exports = { viewTasks };
+// get task by ID
+async function getTaskById(req, res) {
+    try {
+        const {id} = req.params;
+
+        const data = await fs.readFile(TASK_FILE, 'utf8');
+        const tasks = JSON.parse(data);
+
+        if (!Array.isArray(tasks)) {
+            return res.status(400).json({
+                message: 'Invalid JSON structure'
+            });
+        }
+
+        const task = tasks.find(t => String(t.id) === String(id));
+
+        if (!task) {
+            return res.status(404).json({
+                message: 'Task not found.'
+            });
+        }
+
+        return res.status(200).json(task);
+
+    } catch(error) {
+        if (error.code === 'ENOENT') {
+            return res.status(404).json({
+                message: 'No tasks found.'
+            });
+        }
+
+        if (error instanceof SyntaxError) {
+            return res.status(400).json({
+                message: 'Invalid JSON syntax'
+            });
+        }
+
+        return res.status(500).json({
+            message: error.message
+        });
+    }
+}
+
+// update task
+async function editTask(req, res) {
+    try {
+        const {id} = req.params;
+        const {name, categoryId, priorityId, statusId, month, year, hour} = req.body;
+        let tasks = [];
+
+        try {
+            const data = await fs.readFile(TASK_FILE, 'utf-8');
+            tasks = JSON.parse(data);
+
+            // check if the structure in json file is valid. Invalid includes missing [] at the start
+            if(!Array.isArray(tasks)) {
+                return res.status(400).json({ message: 'Invalid JSON structure' })
+            }
+
+        } catch (error) {
+            // cannot find the task.json file
+            if (error.code === 'ENOENT') {
+                return res.status(404).json({ message: 'No tasks found to edit.' });
+            } else {
+                throw error;
+            }
+        }
+
+        // store the index found in the array. Search through each task and match if the task id is the same as the id I am searching for.
+        const taskIndex = tasks.findIndex(t => t.id == id);
+        // findIndex returns the index value when found or -1 when not found
+        // if the task id is not found
+        if (taskIndex === -1) {
+            return res.status(404).json({ message: 'Task not found.' });
+        }
+
+        // Update resource fields
+        tasks[taskIndex] = {
+            ...tasks[taskIndex],
+            name: name || tasks[taskIndex].name,
+            categoryId: categoryId || tasks[taskIndex].categoryId,
+            priorityId: priorityId || tasks[taskIndex].priorityId,
+            statusId: statusId || tasks[taskIndex].statusId,
+            month: month || tasks[taskIndex].month,
+            year: year || tasks[taskIndex].year,
+            hour: hour || tasks[taskIndex].hour,
+        }
+
+        // create a file or overwrite data if existed
+        await fs.writeFile(TASK_FILE, JSON.stringify(tasks, null, 2), 'utf8');
+        return res.status(200).json({ message: 'Task updated successfully!', task: tasks[taskIndex] });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = { 
+    viewTasks,
+    getTaskById,
+    editTask
+};

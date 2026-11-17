@@ -30,11 +30,11 @@ function viewTask() {
     .catch(error => {
         console.error('Error:', error);
         // display error text
-        displayServerErrText(error)
+        displayErrorText(error)
     });
 }
 // display error text to frontend
-function displayServerErrText(err) {
+function displayErrorText(err) {
     var mainEle = document.querySelector('main');
     var spanEle = document.getElementById('serverErrText');
 
@@ -107,7 +107,6 @@ function dynamicDisplayTasks(tasks) {
 
         // store the item into a variable
         task = tasks[i]
-        console.log('task', task)
 
         // check if any fields are missing
         if(task.id === undefined ||
@@ -277,6 +276,7 @@ function dynamicDisplayTasks(tasks) {
         }
 
         dueDateFormat = `${task.month} ${task.year}, ${task.hour}`;
+        var counter = 0
     
         container += `
             <tr>
@@ -300,7 +300,7 @@ function dynamicDisplayTasks(tasks) {
                 <td style="display: flex; gap: 10px;">
                     <!-- edit button -->
                     <div>
-                        <button class="action-btn">
+                        <button class="action-btn" onclick='displayDataInModal(this)' restId="${task.id}">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M21.2799 6.40005L11.7399 15.94C10.7899 16.89 7.96987 17.33 7.33987 16.7C6.70987 16.07 7.13987 13.25 8.08987 
                                 12.3L17.6399 2.75002C17.8754 2.49308 18.1605 2.28654 18.4781 2.14284C18.7956 1.99914 19.139 1.92124 19.4875 1.9139C19.8359 
@@ -316,6 +316,8 @@ function dynamicDisplayTasks(tasks) {
                 </td>
             </tr>
         `;
+
+        counter+1
     }
 
     htmlEle.innerHTML = container;
@@ -362,4 +364,155 @@ function nextPage() {
         dynamicDisplayTasks(allTasks.slice(startIndex - 1, endIndex));
     }
 }
+
+// edit task
+// get task data by ID
+async function getTaskById(taskId) {
+    var apiUrl = `/tasks/${taskId}`;
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET'
+        })
+
+        if(!response.ok) {
+            throw new Error('Server is not responding.');
+        }
+        
+        return await response.json();
+        
+    } catch(error) {
+        console.error('Error: ', error)
+    }
+}
+
+// Pre-fill data to the input elements in the modal pop-up
+async function displayDataInModal(btn) {
+    var id = btn.getAttribute('restId')
+    
+    
+
+    const task = await getTaskById(id)
+
+    // match corresponding month and output the value using dict[index]
+    var numericMonth = {
+        "Jan": "01",
+        "Feb": "02",
+        "Mar": "03",
+        "Apr": "04",
+        "May": "05",
+        "Jun": "06",
+        "Jul": "07",
+        "Aug": "08",
+        "Sep": "09",
+        "Oct": "10",
+        "Nov": "11",
+        "Dec": "12",
+    }
+
+    // format date and time
+    var endDateFormat = `${task.year}-${numericMonth[task.month]}-01`;
+    var endTimeFormat = `${task.hour}:00`;
+
+    // display value into input fields
+    document.getElementById('editName').value = task.name;
+    document.getElementById('editCategory').value = task.categoryId;
+    document.getElementById('editSubject').value = task.subjectId;
+    document.getElementById('editPriority').value = task.priorityId;
+    document.getElementById('editStatus').value = task.statusId;
+    document.getElementById('editEndDate').value = endDateFormat;
+    document.getElementById('editEndTime').value = endTimeFormat;
+
+    // open modal
+    openEditTaskModal()
+}
+
+function openEditTaskModal() {
+    var modalEle = document.getElementById('edit-modal');
+    var contentLayoutEle = document.getElementById('content-layout')
+
+    // 'appear' mode for modal to appear
+    modalEle.style.display = "block";
+    // increase opacity, allow cursor only to default (else it still can select or click other things in the background) and no pointerevent
+    contentLayoutEle.style.opacity = "0"
+    contentLayoutEle.style.cursor = "cursor"
+    // by setting pointerEvent to none, it only allow to interact with the modal only (cannot interact elements, etc in the background)
+    contentLayoutEle.style.pointerEvents = "none"
+}
+
+function closeEditTaskModal() {
+    var modalEle = document.getElementById('edit-modal');
+    var contentLayoutEle = document.getElementById('content-layout')
+
+    // 'appear' mode for modal to appear
+    modalEle.style.display = "none";
+    // increase opacity, allow cursor only to default (else it still can select or click other things in the background) and no pointerevent
+    contentLayoutEle.style.opacity = "1"
+    contentLayoutEle.style.cursor = "default"
+    // by setting pointerEvent to none, it only allow to interact with the modal only (cannot interact elements, etc in the background)
+    contentLayoutEle.style.pointerEvents = "default"
+}
+
+function closeEditButton() {
+    closeEditTaskModal()
+}
+
+
+
+
+
+// Send updated task data to the backend API
+// async function updateTask(id) {
+//     // var response = "";
+//     // create JSON object from input fields
+//     var jsonData = {
+//         name: document.getElementById('editName').value,
+//         name: document.getElementById('editName').value.trim(),
+//         categoryId: document.getElementById('editCategory').value ,
+//         priorityId: document.getElementById('editPriority').value,
+//         statusId: document.getElementById('editStatus').value,
+//     }
+
+//     // Validate month input
+//     if(Number(jsonData.month < 1 || Number(jsonData.month > 12))) {
+//         alert('Month must be between 1 and 12');
+//         return;
+//     }
+
+//     // Configure the request as PUT to the task-resource endpoint with the resource ID
+//     const formElement = document.getElementById('editForm');
+//     const formData = new FormData(formElement);
+//     const taskData = Object.fromEntries(formData.entries());
+    
+//     try {
+//         const response = await fetch(`/tasks/${id}`, {
+//             method: 'PUT',
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify(taskData)
+//         })
+
+//         if (!response.ok) {
+//             throw new Error('Server is not responding.');
+//         }
+
+//         const data = await response.json();
+
+//         console.log('data', data);
+
+//         if (data.message == "Task updated successfully!") {
+//             alert("Task updated successfully!");
+//             document.getElementById('modal').style.display = "none";
+//             // viewTasks();
+//         } else {
+//             alert("Unable to update task!");
+//         }
+
+//     } catch(error) {
+//         console.error()
+//     }
+// };
+
+
 

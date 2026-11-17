@@ -8,17 +8,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("./public"));
 
+const { viewTasks, getTaskById, editTask } = require('./utils/WeiYeUtil');
+const { sortTasks } = require('./utils/JanaUtil');
+
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + "/public/" + startPage);
 })
 
-// GET API - Wei Ye
-const { viewTasks } = require('./utils/WeiYeUtil');
-app.get('/view-tasks', viewTasks)
+// GET API (display all tasks) - Wei Ye
+app.get('/view-tasks', viewTasks);
+// GET API with sorting functionality (display tasks according to the sorting) - Jana
+app.get('/tasks', sortTasks);
 
-// GET API but with sorting functionality: Jana
-const { sortTasks } = require('./utils/JanaUtil');
-app.get('/tasks', sortTasks); 
+// GET API (display 1 task) - Wei Ye
+app.get('/tasks/:id', getTaskById);
+// PUT API (update 1 task) - Wei Ye
+app.put('/tasks/:id', editTask);
+
+
 
 
 

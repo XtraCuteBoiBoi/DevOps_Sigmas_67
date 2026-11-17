@@ -36,7 +36,7 @@
 
             <!-- Search Bar and Task Count -->
             <div class="top-bar">
-                <!-- Search functionality can be integrated later -->
+                <!-- Search functionality is static, non-functional -->
                 <input type="text" id="searchTask" class="search-input" placeholder="Search task name">
                 <p class="total-tasks">Total Tasks (<span id="totalTasks">0</span>)</p>
             </div>
@@ -59,7 +59,7 @@
                         <div class="control-group">
                             <label for="sortSelect">Sort By:</label>
 
-                            <select id="sortSelect">
+                            <select id="sortSelect" onchange="sortTask()">
                                 <option value="name-asc">Name (A-Z)</option>
                                 <option value="name-desc">Name (Z-A)</option>
                                 <option value="priority-asc">Priority (High-Low)</option>
@@ -135,6 +135,5 @@
             </div>
         </main>
     </div>
-
 </body>
 </html>

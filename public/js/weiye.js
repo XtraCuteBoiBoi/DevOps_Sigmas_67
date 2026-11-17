@@ -389,8 +389,6 @@ async function getTaskById(taskId) {
 // Pre-fill data to the input elements in the modal pop-up
 async function displayDataInModal(btn) {
     var id = btn.getAttribute('restId')
-    
-    
 
     const task = await getTaskById(id)
 
@@ -422,11 +420,35 @@ async function displayDataInModal(btn) {
     document.getElementById('editStatus').value = task.statusId;
     document.getElementById('editEndDate').value = endDateFormat;
     document.getElementById('editEndTime').value = endTimeFormat;
+    
+    // check if the subject value of the task is null
+    var subjectContainer = document.getElementById('subject-container');
+    // hide subject input if value is null
+    if(task.subjectId === null) {
+        subjectContainer.style.display = "none";
+    } else {
+        subjectContainer.style.display = "flex";
+    }
 
     // open modal
     openEditTaskModal()
 }
 
+// display subject input field whenever 'Academic' value in category field is clicked
+function showSubjects() {
+    var subjectDiv = document.getElementById('subject-container');
+    var categoryValue = document.getElementById('editCategory').value;
+
+    // if the category value is 'Academic', display the subject field
+    if(categoryValue === '2') {
+        subjectDiv.style.display = "flex";
+    } else {
+        subjectDiv.style.display = "none";
+    }
+    
+}
+
+// open modal
 function openEditTaskModal() {
     var modalEle = document.getElementById('edit-modal');
     var contentLayoutEle = document.getElementById('content-layout')
@@ -440,6 +462,7 @@ function openEditTaskModal() {
     contentLayoutEle.style.pointerEvents = "none"
 }
 
+// close modal
 function closeEditTaskModal() {
     var modalEle = document.getElementById('edit-modal');
     var contentLayoutEle = document.getElementById('content-layout')
@@ -450,14 +473,18 @@ function closeEditTaskModal() {
     contentLayoutEle.style.opacity = "1"
     contentLayoutEle.style.cursor = "default"
     // by setting pointerEvent to none, it only allow to interact with the modal only (cannot interact elements, etc in the background)
-    contentLayoutEle.style.pointerEvents = "default"
+    contentLayoutEle.style.pointerEvents = "auto"
 }
 
+// close button in the modal
 function closeEditButton() {
     closeEditTaskModal()
 }
 
-
+// submit updated data to the backend API
+function updateTask(id) {
+    var response = '';
+}
 
 
 

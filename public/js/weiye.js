@@ -58,6 +58,10 @@ function displayServerErrText(err) {
         case 'Invalid JSON syntax': 
             spanEle.innerText = "Invalid JSON syntax. Please check your task.json file."
             break;
+        // missing data field(s) of a task
+        case 'Missing data field(s) of a task!':
+            spanEle.innerText = "Missing data fields in a task! Please check your task.json file."
+            break;
         // any errors that does not match any case will display this text instead
         default:
             spanEle.innerText = "An unexpected error has occured. Please contact your administrator.";
@@ -127,6 +131,7 @@ function dynamicDisplayTasks(tasks) {
         
         // category conditional 
         switch (String(task.categoryId)){
+            // personal
             case '1':
                 iconValue = `
                     <svg fill="#b85d72" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -137,6 +142,7 @@ function dynamicDisplayTasks(tasks) {
                 `;
                 categoryValue = 'Personal';
                 break
+            // academic
             case '2':
                 iconValue = `
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -153,6 +159,7 @@ function dynamicDisplayTasks(tasks) {
                 `;
                 categoryValue = 'Academic';
                 break
+            // work
             case '3':
                 iconValue = `
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -163,6 +170,7 @@ function dynamicDisplayTasks(tasks) {
                 `;
                 categoryValue = 'Work';
                 break
+            // errands
             case '4':
                 iconValue = `
                     <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
@@ -183,6 +191,7 @@ function dynamicDisplayTasks(tasks) {
                 `;
                 categoryValue = 'Errands';
                 break
+            // entertainment
             case '5':
                 iconValue = `
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
@@ -204,12 +213,15 @@ function dynamicDisplayTasks(tasks) {
 
         // priority conditional
         switch (String(task.priorityId)){
+            // high
             case '1':
                 priorityValue = 'High';
                 break
+            // medium
             case '2':
                 priorityValue = 'Medium';
                 break
+            // low
             case '3':
                 priorityValue = 'Low';
                 break
@@ -217,14 +229,17 @@ function dynamicDisplayTasks(tasks) {
 
         // status conditional
         switch (String(task.statusId)) {
+            // overdue
             case '1':
                 statusClassNameBtn = 'status-overdue'
                 statusValue = 'Overdue';
                 break
+            // pending
             case '2':
                 statusClassNameBtn = 'status-pending'
                 statusValue = 'Pending';
                 break
+            // completed
             case '3':
                 statusClassNameBtn = 'status-completed'
                 statusValue = 'Completed'

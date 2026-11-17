@@ -80,6 +80,7 @@ function totalTaskValue(total) {
 // display dynamic table row HTML using JS
 function dynamicDisplayTasks(tasks) {
     var categoryValue = '';
+    var subjectValue = '';
     var priorityValue = '';
     var statusValue = '';
     var dueDateFormat = '';
@@ -106,6 +107,7 @@ function dynamicDisplayTasks(tasks) {
 
         // store the item into a variable
         task = tasks[i]
+        console.log('task', task)
 
         // check if any fields are missing
         if(task.id === undefined ||
@@ -211,6 +213,34 @@ function dynamicDisplayTasks(tasks) {
                 break
         }
 
+        // subject conditional
+        switch (String(task.subjectId)){
+            case '1':
+                subjectValue = 'ITAD';
+                break;
+            case '2':
+                subjectValue = 'MLDP';
+                break;
+            case '3':
+                subjectValue = 'FWEB';
+                break
+            case '4':
+                subjectValue = 'DVOPS';
+                break;
+            case '5':
+                subjectValue = 'CMATH';
+                break;
+            case '6':
+                subjectValue = 'PROCOMM';
+                break;
+            case '7':
+                subjectValue = 'GL';
+                break;
+            case '8':
+                subjectValue = 'SCA';
+                break;
+        }
+
         // priority conditional
         switch (String(task.priorityId)){
             // high
@@ -259,7 +289,7 @@ function dynamicDisplayTasks(tasks) {
                     </div>
                 </td>
                 <td>${task.name}</td>
-                <td>${categoryValue}</td>
+                <td>${categoryValue == 'Academic' ? subjectValue : categoryValue}</td>
                 <td>${priorityValue}</td>
                 <td>
                     <button class="statusBtn ${statusClassNameBtn}">

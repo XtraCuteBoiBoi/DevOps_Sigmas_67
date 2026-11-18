@@ -484,6 +484,22 @@ function closeEditButton() {
 // submit updated data to the backend API
 function updateTask(id) {
     var response = '';
+    // 2026-11-01 14:00:00
+    var [year, month] = document.getElementById('editEndDate').value.split('-')
+    var [hour, second] = document.getElementById('editEndTime').value.split(':')
+    hour = `${hour}:${second}`
+
+    // create JSON object from input fields
+    var jsonData = {
+        name: document.getElementById('editName').value.trim(),
+        categoryId: document.getElementById('editCategory').value,
+        subjectId: document.getElementById('editSubject').value || null,
+        priorityId: document.getElementById('editPriority').value,
+        statusId: document.getElementById('editStatus').value,
+        month: month,
+        year: year,
+        hour: hour
+    }
 }
 
 

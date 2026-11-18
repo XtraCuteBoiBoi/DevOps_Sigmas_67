@@ -172,64 +172,77 @@
                 <!-- name -->
                 <div class="input-container">
                     <label for="editName">Name</label>
-                    <input type="text" id="editName" placeholder="Enter Task Name">
+                    <input type="text" id="editName" placeholder="Enter Task Name" required>
                 </div>
-                <!-- category -->
-                <div class="input-container">
-                    <label for="editCategory">Category</label>
-                    <select name="categoryId" id="editCategory" onchange="showSubjects()">
-                        <option value="">Select Category</option>
-                        <option value="1">Personal</option>
-                        <option value="2">Academic</option>
-                        <option value="3">Work</option>
-                        <option value="4">Errands</option>
-                        <option value="5">Entertainment</option>
-                    </select>
+                <!-- category + subject -->
+                <div class="row-content">
+                    <!-- category -->
+                    <div class="input-container">
+                        <label for="editCategory">Category</label>
+                        <select name="categoryId" id="editCategory" onchange="showSubjects()" required>
+                            <option value="">Select Category</option>
+                            <option value="1">Personal</option>
+                            <option value="2">Academic</option>
+                            <option value="3">Work</option>
+                            <option value="4">Errands</option>
+                            <option value="5">Entertainment</option>
+                        </select>
+                    </div>
+                    <!-- subject -->
+                    <div class="input-container" id="subject-container">
+                        <label for="editSubject">Subject</label>
+                        <select name="subjectId" id="editSubject" required>
+                            <option value="">Select Subject</option>
+                            <option value="1">ITAD</option>
+                            <option value="2">MLDP</option>
+                            <option value="3">FWEB</option>
+                            <option value="4">DVOPS</option>
+                            <option value="5">CMATH</option>
+                            <option value="6">PROCOMM</option>
+                            <option value="7">GL</option>
+                            <option value="8">SCA</option>
+                        </select>
+                    </div>
                 </div>
-                <!-- subject -->
-                <div class="input-container" id="subject-container">
-                    <label for="editSubject">Subject</label>
-                    <select name="subjectId" id="editSubject">
-                        <option value="">Select Subject</option>
-                        <option value="1">ITAD</option>
-                        <option value="2">MLDP</option>
-                        <option value="3">FWEB</option>
-                        <option value="4">DVOPS</option>
-                        <option value="5">CMATH</option>
-                        <option value="6">PROCOMM</option>
-                        <option value="7">GL</option>
-                        <option value="8">SCA</option>
-                    </select>
+                <!-- priority + status -->
+                <div class="row-content">
+                    <!-- priority -->
+                    <div class="input-container">
+                        <label for="editPriority">Priority</label>
+                        <select name="priorityId" id="editPriority" required>
+                            <option value="">Select Subject</option>
+                            <option value="1">High</option>
+                            <option value="2">Medium</option>
+                            <option value="3">Low</option>
+                        </select>
+                    </div>
+                    <!-- status -->
+                    <div class="input-container">
+                        <label for="editStatus">Status</label>
+                        <select name="statusId" id="editStatus" required>
+                            <option value="">Select Subject</option>
+                            <option value="1">Overdue</option>
+                            <option value="2">Pending</option>
+                            <option value="3">Completed</option>
+                        </select>
+                    </div>
                 </div>
-                <!-- priority -->
-                <div class="input-container">
-                    <label for="editPriority">Priority</label>
-                    <select name="priorityId" id="editPriority">
-                        <option value="">Select Subject</option>
-                        <option value="1">High</option>
-                        <option value="2">Medium</option>
-                        <option value="3">Low</option>
-                    </select>
+                <!-- end date + end time -->
+                <div class="row-content">
+                      <!-- end date -->
+                    <div class="input-container">
+                        <label for="editEndDate">End Date</label>
+                        <input type="date" id="editEndDate" required>
+                    </div>
+                    <!-- end time -->
+                    <div class="input-container">
+                        <label for="editEndTime">End Time</label>
+                        <input type="time" id="editEndTime" required>
+                    </div>
                 </div>
-                <!-- status -->
-                <div class="input-container">
-                    <label for="editStatus">Task Name</label>
-                    <select name="statusId" id="editStatus">
-                        <option value="">Select Subject</option>
-                        <option value="1">Overdue</option>
-                        <option value="2">Pending</option>
-                        <option value="3">Completed</option>
-                    </select>
-                </div>
-                <!-- end date -->
-                <div class="input-container">
-                    <label for="editEndDate">End Date</label>
-                    <input type="date" id="editEndDate">
-                </div>
-                <!-- end time -->
-                <div class="input-container">
-                    <label for="editEndTime">End Time</label>
-                    <input type="time" id="editEndTime">
+                <!-- task id -->
+                <div>
+                    <input type="hidden" id="taskId">
                 </div>
 
                 <div style="margin-top: 6%; display: flex; justify-content: center;">

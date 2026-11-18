@@ -93,7 +93,7 @@ function dynamicDisplayTasks(tasks) {
     var iconValue = '';
 
      // Display txt if no data is created in DB
-    if(remainingTasks.length < 1) {
+    if(allTasks.length < 1) {
         tableEle.style.display = "none";
         divEle.innerText = 'No task to display. Create a task to display in here.'
         divEle.style.display = "block"
@@ -375,11 +375,13 @@ async function getTaskById(taskId) {
             method: 'GET'
         })
 
+        const data = await response.json();
+
         if(!response.ok) {
-            throw new Error('Server is not responding.');
+            throw new Error(data.message || 'Server is not responding.');
         }
         
-        return await response.json();
+        return data;
         
     } catch(error) {
         console.error('Error: ', error)
@@ -420,6 +422,7 @@ async function displayDataInModal(btn) {
     document.getElementById('editStatus').value = task.statusId;
     document.getElementById('editEndDate').value = endDateFormat;
     document.getElementById('editEndTime').value = endTimeFormat;
+    document.getElementById('taskId').value = task.id;
     
     // check if the subject value of the task is null
     var subjectContainer = document.getElementById('subject-container');
@@ -482,80 +485,78 @@ function closeEditButton() {
 }
 
 // submit updated data to the backend API
-function updateTask(id) {
-    var response = '';
-    // 2026-11-01 14:00:00
+function updateTask() {
+    var id = document.getElementById('taskId').value;
+    // sample data: 2026-11-01 14:00:00
     var [year, month] = document.getElementById('editEndDate').value.split('-')
     var [hour, second] = document.getElementById('editEndTime').value.split(':')
-    hour = `${hour}:${second}`
+    // format hour
+    hour = `${hour}:${second}`;
+
+    const months = {
+        "01": "Jan",
+        "02": "Feb",
+        "03": "Mar",
+        "04": "Apr",
+        "05": "May",
+        "06": "Jun",
+        "07": "Jul",
+        "08": "Aug",
+        "09": "Sep",
+        "10": "Oct",
+        "11": "Nov",
+        "12": "Dec",
+    }
+
+    var categoryId = document.getElementById('editCategory').value;
+    var subjectId = document.getElementById('editSubject').value;
+    // if category is not "Academic", set the subjectId to null to prevent saving the previous subjectId value if any
+    if(categoryId !== '2') {
+        subjectId = null;
+    }
 
     // create JSON object from input fields
     var jsonData = {
         name: document.getElementById('editName').value.trim(),
         categoryId: document.getElementById('editCategory').value,
-        subjectId: document.getElementById('editSubject').value || null,
+        subjectId: subjectId,
         priorityId: document.getElementById('editPriority').value,
         statusId: document.getElementById('editStatus').value,
-        month: month,
+        month: months[month],
         year: year,
         hour: hour
     }
+    // call the API and send updated task to DB
+    sendUpdatedTask(id, jsonData)
 }
 
+async function sendUpdatedTask(id, jsonData) {
+    try {
+        const response = await fetch(`/tasks/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
 
+        const data = await response.json();
 
-// Send updated task data to the backend API
-// async function updateTask(id) {
-//     // var response = "";
-//     // create JSON object from input fields
-//     var jsonData = {
-//         name: document.getElementById('editName').value,
-//         name: document.getElementById('editName').value.trim(),
-//         categoryId: document.getElementById('editCategory').value ,
-//         priorityId: document.getElementById('editPriority').value,
-//         statusId: document.getElementById('editStatus').value,
-//     }
+        if (!response.ok) {
+            throw new Error(data.message ||'Server is not responding.');
+        }
 
-//     // Validate month input
-//     if(Number(jsonData.month < 1 || Number(jsonData.month > 12))) {
-//         alert('Month must be between 1 and 12');
-//         return;
-//     }
+        console.log('updateddata', data);
 
-//     // Configure the request as PUT to the task-resource endpoint with the resource ID
-//     const formElement = document.getElementById('editForm');
-//     const formData = new FormData(formElement);
-//     const taskData = Object.fromEntries(formData.entries());
-    
-//     try {
-//         const response = await fetch(`/tasks/${id}`, {
-//             method: 'PUT',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify(taskData)
-//         })
+        if (data.message == "Task updated successfully!") {
+            alert("Task updated successfully!");
+            closeEditTaskModal()
+            viewTask();
+        } else {
+            alert("Unable to update task!");
+        }
 
-//         if (!response.ok) {
-//             throw new Error('Server is not responding.');
-//         }
-
-//         const data = await response.json();
-
-//         console.log('data', data);
-
-//         if (data.message == "Task updated successfully!") {
-//             alert("Task updated successfully!");
-//             document.getElementById('modal').style.display = "none";
-//             // viewTasks();
-//         } else {
-//             alert("Unable to update task!");
-//         }
-
-//     } catch(error) {
-//         console.error()
-//     }
-// };
-
-
-
+    } catch(error) {
+        console.error(error);
+    }
+}

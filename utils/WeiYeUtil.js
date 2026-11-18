@@ -12,7 +12,7 @@ async function viewTasks(req, res) {
         return res.status(200).json(allTasks);
 
     } catch (error) {
-        jsonError(error)
+        jsonError(res, error)
     }
 }
 
@@ -25,14 +25,14 @@ async function getTaskById(req, res) {
         const taskIndex = allTasks.find(t => String(t.id) === String(id));
 
         // check if the task index is found
-        if (taskIndex === -1) {
+        if (!taskIndex) {
             return res.status(404).json({ message: 'Task not found.' });
         }
 
         return res.status(200).json(taskIndex);
 
     } catch(error) {
-        jsonError(error)
+        jsonError(res, error)
     }
 }
 
@@ -40,12 +40,11 @@ async function getTaskById(req, res) {
 async function editTask(req, res) {
     try {
         const {id} = req.params;
-        const {name, categoryId, priorityId, statusId, month, year, hour} = req.body;
-        let tasks = [];
+        const {name, categoryId, subjectId, priorityId, statusId, month, year, hour} = req.body;
 
         try {
             // if no error found, return allTasks
-            await sendErrorMessage();
+            var tasks = await sendErrorMessage();
 
         } catch (error) {
             // cannot find the task.json file
@@ -58,6 +57,7 @@ async function editTask(req, res) {
 
         // store the index found in the array. Search through each task and match if the task id is the same as the id I am searching for.
         const taskIndex = tasks.findIndex(t => String(t.id) == String(id));
+        console.log('taskindex', taskIndex)
         // findIndex returns the index value when found or -1 when not found
         // if the task id is not found
         if (taskIndex === -1) {
@@ -69,6 +69,7 @@ async function editTask(req, res) {
             ...tasks[taskIndex],
             name: name || tasks[taskIndex].name,
             categoryId: categoryId || tasks[taskIndex].categoryId,
+            subjectId: subjectId ?? null,
             priorityId: priorityId || tasks[taskIndex].priorityId,
             statusId: statusId || tasks[taskIndex].statusId,
             month: month || tasks[taskIndex].month,
@@ -81,11 +82,11 @@ async function editTask(req, res) {
         return res.status(200).json({ message: 'Task updated successfully!', task: tasks[taskIndex] });
 
     } catch (error) {
-        jsonError(error)
+        jsonError(res, error)
     }
 }
 // catch other json error related
-function jsonError(error) {
+function jsonError(res, error) {
     // Handle case where file does not exist yet
     if (error.code === 'ENOENT') {
         // return empty list if no file
@@ -101,18 +102,19 @@ function jsonError(error) {
     return res.status(500).json({ message: error.message });
 }
 // backend validations
-async function sendErrorMessage(allTasks) {
+async function sendErrorMessage() {
     const data = await fs.readFile(TASK_FILE, 'utf8');
 
     // if no data in json file (e.g. file existed but no content inside the file)
     if(!data) {
-        return res.status(400).json({ message: 'Empty JSON file'})
+        throw new Error('Empty JSON file');
     }
 
-    var allTasks = JSON.parse(data);
+    const allTasks = JSON.parse(data);
+
     // check if the structure in json file is valid. Invalid includes missing [] at the start
     if(!Array.isArray(allTasks)) {
-        return res.status(400).json({ message: 'Invalid JSON structure' })
+        throw new Error('Invalid JSON structure');
     }
 
     // iterate the list to get each item
@@ -127,7 +129,7 @@ async function sendErrorMessage(allTasks) {
             allTasks[i].year === undefined ||
             allTasks[i].hour === undefined
         ) {
-            return res.status(400).json({ message: 'Missing data field(s) of a task!' });
+            throw new Error('Missing data field(s) of a task!');
         }
     }
     // if no errors, return all tasks

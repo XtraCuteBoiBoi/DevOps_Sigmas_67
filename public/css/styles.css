@@ -304,10 +304,10 @@ path {
     border: 2px solid black;
     border-radius: 10px;
     width: 40%;
-    height: 95vh;
+    height: 32rem;
     top: 2vh;
-    margin: 0 32%;
-    padding: 1rem 1.5rem;
+    margin: 6% 31%;
+    padding: 1.5rem;
     display: none;
 }
 
@@ -321,13 +321,13 @@ path {
     display: flex; 
     align-items: center; 
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 600;
 }
 
 .modal-header button {
     display: flex;
-    padding: 5px;
+    padding: 8px;
     border: none;
     cursor: pointer;
 }
@@ -337,15 +337,15 @@ path {
 }
 
 .modal-header button svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
 }
 
 .modal-wrapper input, .modal-wrapper select {
     padding: 10px;
     border: 1px solid black;
     border-radius: 10px;
-    font-size: 12px;
+    font-size: 1rem;
 }
 
 .modal-wrapper select:focus, .modal-wrapper input:focus {
@@ -353,11 +353,11 @@ path {
 }
 
 .edit-input-container {
-    margin-top: 3%;
+    margin-top: 2%;
 }
 
 .edit-input-container button {
-    padding: 8px 12px;
+    padding: 10px;
     color: var(--primary-colour);
     cursor: pointer;
     border: none;
@@ -367,14 +367,21 @@ path {
     background-color: var(--hover-colour);
 }
 
+.row-content {
+    display: flex; 
+    justify-content: space-between; 
+    gap: 1rem;
+}
+
 /* container for each input */
 .input-container {
     margin: 8px 0;
     display: flex;
     flex-direction: column;
+    width: 100%;
 
     & label {
-        font-size: 14px;
-        margin-bottom: 0.1rem;
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
     }
 }

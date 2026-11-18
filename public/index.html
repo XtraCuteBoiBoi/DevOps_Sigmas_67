@@ -1,15 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-    <link rel="stylesheet" href="style.css">
+    <title>Task Manager</title>
+    <!-- Google Font: Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- External CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="./js/jorell.js"></script>
+    <script src="./js/weiye.js"></script>
+    <script src="./js/jana.js"></script>
 </head>
-<body>
 
-    
-    
+<body onload="viewTask()">
+    <div class="page-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- TODO: jorell to implement website name/logo -->
+            <div class="sidebar-header">
+                <h2>Task Manager</h2> <!-- jorell you can change this if yw (NAME IT ANCHOVY) -->
+            </div>
+
+            <!-- TODO: jorell to implement Create Task button -->
+            <div class="sidebar-content">
+                <!-- Create Task button will be added here -->
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Search Bar and Task Count -->
+            <div class="top-bar">
+                <!-- Search functionality is static, non-functional -->
+                <input type="text" id="searchTask" class="search-input" placeholder="Search task name">
+                <p class="total-tasks">Total Tasks (<span id="totalTasks">0</span>)</p>
+            </div>
+
+
+            <!-- Task Manager Container -->
+            <section class="task-container">
+
+                <!-- Task Manager Header -->
+                <div class="task-header">
+                    <div>
+                        <h2>Task Manager</h2>
+                        <p id="dateRange">Task Overview</p>
+                    </div>
+
+                    <!-- Sorting and Filtering Controls -->
+                    <div class="task-controls">
+
+                        <!-- Sorting Dropdown -->
+                        <div class="control-group">
+                            <label for="sortSelect">Sort By:</label>
+
+                            <select id="sortSelect" onchange="sortTask()">
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
+                                <option value="priority-asc">Priority (High-Low)</option>
+                                <option value="priority-desc">Priority (Low-High)</option>
+                                <option value="date-asc">Date (Earliest-Latest)</option>
+                                <option value="date-desc">Date (Latest-Earliest)</option>
+                            </select>
+                        </div>
+
+                        <!-- Filtering Dropdown -->
+                        <div class="control-group">
+                            <label for="filterSelect">Filter By:</label>
+                            <select id="filterSelect">
+                                <option value="all">All Tasks</option>
+                                <option value="category">Category</option>
+                                <option value="priority">Priority</option>
+                                <option value="status">Status</option>
+                                <option value="subject">Subject</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Table -->
+                <div class="table-wrapper">
+                    <table class="task-table">
+                        <thead>
+                            <tr>
+                                <th>ICON</th>
+                                <th>NAME</th>
+                                <th>CATEGORY</th>
+                                <th>PRIORITY</th>
+                                <th>STATUS</th>
+                                <th>DUE DATE</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <!-- Task rows to be inserted using JavaScript -->
+                        <tbody id="taskTableBody">
+                            
+                            <!-- add delete button -jorell -->
+
+                        </tbody>
+                    </table>
+                </div>
+                                           
+                <div id="noTaskTxt" >
+                    <span style="font-size: 1.2rem; display: flex; justify-content: center;">No task to display. Create a task to display in here</span>
+                </div>
+
+            </section>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <!-- prev page button -->
+                <button id="previousPage" type="button" onclick="prevPage()">&lt;</button>
+                <!-- show list index of total tasks -->
+                <div id="paginationInfo">
+                    <span>Showing
+                        <span id="currentDisplayedValue">
+                            0-0
+                        </span>
+                        <span>of</span>
+                        <span id="totalTaskValue">
+                            0
+                        </span>
+                        <span>tasks</span> 
+                    </span>
+                </div>
+                <!-- next page button -->
+                <button id="nextPage" type="button" onclick="nextPage()">&gt;</button>
+
+            </div>
+        </main>
+    </div>
 </body>
 </html>

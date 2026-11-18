@@ -109,7 +109,7 @@ async function sendErrorMessage(allTasks) {
         return res.status(400).json({ message: 'Empty JSON file'})
     }
 
-    const allTasks = JSON.parse(data);
+    var allTasks = JSON.parse(data);
     // check if the structure in json file is valid. Invalid includes missing [] at the start
     if(!Array.isArray(allTasks)) {
         return res.status(400).json({ message: 'Invalid JSON structure' })

@@ -384,7 +384,7 @@ async function getTaskById(taskId) {
         return data;
         
     } catch(error) {
-        console.error('Error: ', error)
+        console.error('Error: ', error);
     }
 }
 
@@ -417,13 +417,13 @@ async function displayDataInModal(btn) {
     // display value into input fields
     document.getElementById('editName').value = task.name;
     document.getElementById('editCategory').value = task.categoryId;
-    document.getElementById('editSubject').value = task.subjectId;
+    document.getElementById('editSubject').value = task.subjectId ?? '';
     document.getElementById('editPriority').value = task.priorityId;
     document.getElementById('editStatus').value = task.statusId;
     document.getElementById('editEndDate').value = endDateFormat;
     document.getElementById('editEndTime').value = endTimeFormat;
     document.getElementById('taskId').value = task.id;
-    
+
     // check if the subject value of the task is null
     var subjectContainer = document.getElementById('subject-container');
     // hide subject input if value is null
@@ -440,15 +440,19 @@ async function displayDataInModal(btn) {
 // display subject input field whenever 'Academic' value in category field is clicked
 function showSubjects() {
     var subjectDiv = document.getElementById('subject-container');
+    var subjectInput = document.getElementById('editSubject');
     var categoryValue = document.getElementById('editCategory').value;
 
-    // if the category value is 'Academic', display the subject field
     if(categoryValue === '2') {
         subjectDiv.style.display = "flex";
+        subjectInput.required = true;
+        subjectInput.disabled = false;
     } else {
         subjectDiv.style.display = "none";
+        subjectInput.required = false;
+        subjectInput.disabled = true;
+        subjectInput.value = '';
     }
-    
 }
 
 // open modal

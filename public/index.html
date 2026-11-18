@@ -12,13 +12,11 @@
     <!-- External CSS -->
     <link rel="stylesheet" href="css/styles.css">
     <script src="./js/jorell.js"></script>
-    <script src="./js/weiye.js"></script>
+    <script src="./js/weiye.js" defer></script>
     <script src="./js/jana.js"></script>
 </head>
 
 <body onload="viewTask()">
-
-
 
     <div class="page-layout" id="content-layout">
         <!-- Sidebar -->
@@ -246,7 +244,7 @@
                 </div>
 
                 <div style="margin-top: 6%; display: flex; justify-content: center;">
-                    <button type="button" onclick="updateTask()">
+                    <button type="submit">
                         Update Task
                     </button>
                 </div>
@@ -255,6 +253,14 @@
 
         </div>
 
+    </div>
+
+    <!-- notification updated successfully -->
+    <div id="updatedNotificationContainer" style="display: none;">
+        <span>Task 
+            <span id="updatedTaskName"></span>
+            updated successfully.
+        </span>
     </div>
 
 </body>

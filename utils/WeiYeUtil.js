@@ -41,15 +41,21 @@ async function editTask(req, res) {
     try {
         const {id} = req.params;
         const {name, categoryId, subjectId, priorityId, statusId, month, year, hour} = req.body;
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
         try {
+            // check id validation
+            // start with lowercase, followed by numbers
+            if(!/^t\d+$/.test(id)) {
+                return res.status(400).json({ message: 'Invalid task id. Please ensure you are updating a task in a correct id format.'});
+            }
             // if no error found, return allTasks
             var tasks = await sendErrorMessage();
 
         } catch (error) {
             // cannot find the task.json file
             if (error.code === 'ENOENT') {
-                return res.status(404).json({ message: 'No tasks found to edit.' });
+                return res.status(404).json({ message: 'No task found to edit.' });
             } else {
                 throw error;
             }
@@ -63,6 +69,61 @@ async function editTask(req, res) {
         if (taskIndex === -1) {
             return res.status(404).json({ message: 'Task not found.' });
         }
+        
+        if(name === null ||
+            categoryId === null ||
+            priorityId === null ||
+            statusId === null ||
+            month == null ||
+            year === null ||
+            hour === null
+        ) {
+            return res.status(400).json({ message: 'Invalid value. The value cannot be null. '})
+        }
+
+        // check if selected 'Academic' but no subject being selected
+        if ((Number(categoryId) === 2 && subjectId === null) || (Number(categoryId) === 2 && subjectId === '')) {
+            return res.status(400).json({message: 'Academic category requires a subject.'});
+        }
+
+        // check if values are empty strings
+        if(name.trim() === '' ||
+            categoryId.trim() === '' ||
+            priorityId.trim() === '' ||
+            statusId.trim() === '' ||
+            month.trim() === '' ||
+            year.trim() === '' ||
+            hour.trim() === ''
+        ) {
+            return res.status(400).json({ message: 'Value(s) cannot be an empty string! Please enter a value.'})
+        }
+
+        // check if category value is within the pre-filled value being set in DB. (e.g. 1 = "Personal", 2 = "Academic"...)
+        if(Number(categoryId) < 1 || Number(categoryId) > 5) {
+            return res.status(400).json({ message: 'Invalid category option! Please choose the category from the dropdown menu.' });
+        }
+        // check if subject value is within the pre-filled value being set in DB. (e.g. 1 = "ITAD", 2 = "MLDP"...)
+        if(subjectId !== null && (!Number(subjectId) || Number(subjectId) < 1 || Number(subjectId) > 8)) {
+            return res.status(400).json({ message: 'Invalid subject option! Please choose the subject from the dropdown menu.' });
+        }
+        // check if priority value is within the pre-filled value being set in DB. (e.g. 1 = "High", 2 = "Medium"...)
+        if(Number(priorityId) < 1 || Number(priorityId) > 3) {
+            return res.status(400).json({ message: 'Invalid priority option! Please choose the priority from the dropdown menu.' });
+        }
+        // check if status value is within the pre-filled value being set in DB. (e.g. 1 = "Overdue", 2 = "Pending"...)
+        if(Number(statusId) < 1 || Number(statusId) > 3) {
+            return res.status(400).json({ message: 'Invalid status option! Please choose the status from the dropdown menu.' });
+        }
+        // check if month value is found in the months list 
+        if(!months.includes(month)) {
+            return res.status(400).json({ message: 'Invalid month value! Please select a valid month value.' });
+        }
+        // check if year value has 4 digits
+        if(!/^\d{4}$/.test(String(year))) {
+            return res.status(400).json({ message: 'Invalid year value! Please enter exactly 4 digit year.'})
+        }
+
+        
 
         // Update resource fields
         tasks[taskIndex] = {

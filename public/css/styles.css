@@ -385,3 +385,27 @@ path {
         margin-bottom: 0.3rem;
     }
 }
+
+#updatedNotificationContainer {
+    position: absolute;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: #20352c;
+    border: 2px solid black;
+    border-radius: 10px;
+    width: 20%;
+    min-height: 1rem;
+    height: auto;
+    top: 5vh;
+    right: 2.4rem;
+    padding: 0.8rem;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    color: white;
+}
+
+#updatedTaskName {
+    font-weight: 700;
+}

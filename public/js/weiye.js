@@ -484,15 +484,35 @@ function closeEditButton() {
     closeEditTaskModal()
 }
 
+// listen to submit button when on clicked
+document.getElementById('editForm').addEventListener("submit", function(event) {
+    event.preventDefault();
+    updateTask()
+})
+
 // submit updated data to the backend API
 function updateTask() {
     var id = document.getElementById('taskId').value;
+    var name = document.getElementById('editName').value;
+    var categoryId = document.getElementById('editCategory').value;
+    var subjectId = document.getElementById('editSubject').value;
+    var priorityId = document.getElementById('editPriority').value;
+    var statusId = document.getElementById('editStatus').value;
+    var endDate = document.getElementById('editEndDate').value;
+    var endTime = document.getElementById('editEndTime').value;
+
+    if(name.trim() === '') {
+        alert("Task name must not be empty!")
+        return;
+    }
+
     // sample data: 2026-11-01 14:00:00
-    var [year, month] = document.getElementById('editEndDate').value.split('-')
-    var [hour, second] = document.getElementById('editEndTime').value.split(':')
+    var [year, month] = endDate.split('-')
+    var [hour, second] = endTime.split(':')
     // format hour
     hour = `${hour}:${second}`;
 
+    // match numbers to month (words)
     const months = {
         "01": "Jan",
         "02": "Feb",
@@ -508,8 +528,6 @@ function updateTask() {
         "12": "Dec",
     }
 
-    var categoryId = document.getElementById('editCategory').value;
-    var subjectId = document.getElementById('editSubject').value;
     // if category is not "Academic", set the subjectId to null to prevent saving the previous subjectId value if any
     if(categoryId !== '2') {
         subjectId = null;
@@ -517,19 +535,20 @@ function updateTask() {
 
     // create JSON object from input fields
     var jsonData = {
-        name: document.getElementById('editName').value.trim(),
-        categoryId: document.getElementById('editCategory').value,
+        name: name.trim(),
+        categoryId: categoryId,
         subjectId: subjectId,
-        priorityId: document.getElementById('editPriority').value,
-        statusId: document.getElementById('editStatus').value,
+        priorityId: priorityId,
+        statusId: statusId,
         month: months[month],
         year: year,
         hour: hour
     }
+
     // call the API and send updated task to DB
     sendUpdatedTask(id, jsonData)
 }
-
+// call API to update data in DB
 async function sendUpdatedTask(id, jsonData) {
     try {
         const response = await fetch(`/tasks/${id}`, {
@@ -546,12 +565,14 @@ async function sendUpdatedTask(id, jsonData) {
             throw new Error(data.message ||'Server is not responding.');
         }
 
-        console.log('updateddata', data);
+        console.log('updatedData', data);
 
         if (data.message == "Task updated successfully!") {
             alert("Task updated successfully!");
             closeEditTaskModal()
+            showUpdatedSuccessNotifcation(data.task.name)
             viewTask();
+            
         } else {
             alert("Unable to update task!");
         }
@@ -559,4 +580,17 @@ async function sendUpdatedTask(id, jsonData) {
     } catch(error) {
         console.error(error);
     }
+}
+
+// display a notifiction top-right corner that task has been updated successfully
+function showUpdatedSuccessNotifcation(name) {
+    var notiContainer = document.getElementById('updatedNotificationContainer');
+    var taskName = document.getElementById('updatedTaskName');
+
+    taskName.innerText = `"${name}"`
+    notiContainer.style.display = "block"
+
+    setTimeout(() => {
+        notiContainer.style.display = "none"
+    }, 5000)
 }

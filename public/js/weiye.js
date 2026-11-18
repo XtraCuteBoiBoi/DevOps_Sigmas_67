@@ -9,25 +9,68 @@ function viewTask() {
     fetch(apiUrl, {
         method: 'GET'
     })
-    .then(response => {
+    .then(async response => {
         if(!response.ok) {
-            throw new Error('Server is not responding.');
+            const data = await response.json();
+            throw new Error(data.message || 'Server is not responding.');
         }
         return response.json()
     })
     .then(data => {
+        if (!Array.isArray(data)) {
+            throw new Error('Invalid JSON structure')
+        } 
         allTasks = data;
         remainingTasks = [...data]
         totalTasks = data.length;
-        totalTaskValue(data.length)
+        // totalTaskValue(data.length)
         dynamicDisplayTasks(allTasks.slice(0, 5))
+        
     })
     .catch(error => {
         console.error('Error:', error);
+        // display error text
+        displayServerErrText(error)
     });
 }
+// display error text to frontend
+function displayServerErrText(err) {
+    var mainEle = document.querySelector('main');
+    var spanEle = document.getElementById('serverErrText');
 
-
+    // make the main content such as tables and search bar to 'hide' mode
+    mainEle.style.display = "none";
+    // insert text in span element
+    switch (err.message) {
+        // server error
+        case 'Error: Server is not responding.':
+            spanEle.innerText = "Could not display data due to server error. Please contact your administrator.";
+            break;
+        // empty JSON file (no any value inside JSON file)
+        case 'Empty JSON file':
+            spanEle.innerText = 'JSON file is empty. Please provide valid JSON data. Please contact your administrator.';
+            break;
+        // invalid json structure (missing starting array in JSON file, but JSON syntax is correct)
+        case 'Invalid JSON structure':
+            spanEle.innerText = "Invalid JSON structure. Please check your task.json file.";
+            break;
+        // invalid JSON syntax (missing curly braces)
+        case 'Invalid JSON syntax': 
+            spanEle.innerText = "Invalid JSON syntax. Please check your task.json file."
+            break;
+        // missing data field(s) of a task
+        case 'Missing data field(s) of a task!':
+            spanEle.innerText = "Missing data fields in a task! Please check your task.json file."
+            break;
+        // any errors that does not match any case will display this text instead
+        default:
+            spanEle.innerText = "An unexpected error has occured. Please contact your administrator.";
+            break;
+    };
+    
+    // make span element to 'appear/show' mode
+    spanEle.style.display = "block";
+}
 
 // display total tasks value
 function totalTaskValue(total) {
@@ -37,134 +80,196 @@ function totalTaskValue(total) {
 // display dynamic table row HTML using JS
 function dynamicDisplayTasks(tasks) {
     var categoryValue = '';
+    var subjectValue = '';
     var priorityValue = '';
     var statusValue = '';
     var dueDateFormat = '';
     var statusClassNameBtn = '';
-    var divEle = document.getElementById('noTaskTxt');
+    var divEle = document.getElementById('noTaskTxtWrapper');
     var tableEle = document.querySelector('.table-wrapper');
     var htmlEle = document.getElementById('taskTableBody')
     var container = '';
     var task = '';
+    var iconValue = '';
+
+     // Display txt if no data is created in DB
+    if(remainingTasks.length < 1) {
+        tableEle.style.display = "none";
+        divEle.innerText = 'No task to display. Create a task to display in here.'
+        divEle.style.display = "block"
+        return;
+    }
+
+    tableEle.style.display = "block";
+    divEle.style.display = "none";
 
     for(var i = 0; i < tasks.length; i++) {
-        var iconValue = '';
-
-        // Display txt if no data is created in DB
-        if(remainingTasks.length < 1) {
-            tableEle.style.display = "none";
-            divEle.style.display = "block"
-            return;
-        }
-
-        tableEle.style.display = "block";
-        divEle.style.display = "none";
 
         // store the item into a variable
         task = tasks[i]
+        console.log('task', task)
+
+        // check if any fields are missing
+        if(task.id === undefined ||
+            task.name === undefined ||
+            task.categoryId === undefined ||
+            task.priorityId === undefined ||
+            task.statusId === undefined ||
+            task.month === undefined ||
+            task.year === undefined ||
+            task.hour === undefined
+        ) {
+            var divEle = document.getElementById('noTaskTxtWrapper');
+            var spanEle = document.getElementById('noTaskTxt');
+
+            totalTaskValue(0)
+            // display text
+            divEle.style.display = "block"
+            spanEle.innerText = "Missing data fields! Could not display data properly."
+            return;
+        }
+
+        totalTaskValue(allTasks.length)
         
         // category conditional 
-        switch (task.categoryId)
-            {
-                case '1':
-                    iconValue = `
-                       <svg fill="#b85d72" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 15.503A5.041 5.041 0 1 0 16 5.42a5.041 5.041 0 0 0 0 10.083zm0 2.215c-6.703 0-11 3.699-11 5.5v3.363h22v-3.363c0-2.178-4.068-5.5-11-5.5z"
-                            stroke-width="2"
-                        />
-                       </svg>
-                    `;
-                    categoryValue = 'Personal';
-                    break
-                case '2':
-                    iconValue = `
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6 11.4999H7M6 15.4999H7M17 15.4999H18M17 11.4999H18M11.5 11.4999H12.5M10 20.9999V16.9999C10 15.8954 10.8954 
-                            14.9999 12 14.9999C13.1046 14.9999 14 15.8954 14 16.9999V20.9999M17 7.49995L18.5761 7.89398C19.4428 8.11064 19.8761 
-                            8.21898 20.1988 8.46057C20.4834 8.67373 20.7061 8.95895 20.8439 9.28682C21 9.65843 21 10.1051 21 10.9984V17.7999C21 
-                            18.9201 21 19.4801 20.782 19.9079C20.5903 20.2843 20.2843 20.5902 19.908 20.782C19.4802 20.9999 18.9201 20.9999 17.8 
-                            20.9999H6.2C5.0799 20.9999 4.51984 20.9999 4.09202 20.782C3.71569 20.5902 3.40973 20.2843 3.21799 19.9079C3 19.4801 3 
-                            18.9201 3 17.7999V10.9984C3 10.1051 3 9.65843 3.15613 9.28682C3.29388 8.95895 3.51657 8.67373 3.80124 8.46057C4.12389 
-                            8.21898 4.55722 8.11064 5.42388 7.89398L7 7.49995L9.85931 4.92657C10.6159 4.2456 10.9943 3.90512 11.4221 3.77598C11.799 
-                            3.66224 12.201 3.66224 12.5779 3.77598C13.0057 3.90512 13.3841 4.2456 14.1407 4.92657L17 7.49995Z" 
-                            stroke="#000000" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    `;
-                    categoryValue = 'Academic';
-                    break
-                case '3':
-                    iconValue = `
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 7H5C3.89543 7 3 7.89543 3 9V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V9C21 7.89543 20.1046 
-                            7 19 7H15M9 7V5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7M9 7H15" 
-                            stroke="#000000" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    `;
-                    categoryValue = 'Work';
-                    break
-                case '4':
-                    iconValue = `
-                        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                            <g>
-                                <g fill="#ffffff" transform="translate(70.530593, 46.125620)">
-                                    <path d="M185.469407,39.207713 L356.136074,39.207713 L356.136074,81.8743797 L185.469407,81.8743797 L185.469407,39.207713 
-                                    Z M185.469407,188.541046 L356.136074,188.541046 L356.136074,231.207713 L185.469407,231.207713 L185.469407,188.541046 Z
-                                    M14.8027404,295.207713 L121.469407,295.207713 L121.469407,401.87438 L14.8027404,401.87438 L14.8027404,295.207713 Z 
-                                    M46.8027404,327.207713 L46.8027404,369.87438 L89.4694071,369.87438 L89.4694071,327.207713 L46.8027404,327.207713 Z 
-                                    M185.469407,337.87438 L356.136074,337.87438 L356.136074,380.541046 L185.469407,380.541046 L185.469407,337.87438 Z 
-                                    M119.285384,-7.10542736e-15 L144.649352,19.5107443 L68.6167605,118.353113 L1.42108547e-14,58.3134476 L21.0721475,34.2309934 
-                                    L64.0400737,71.8050464 L119.285384,-7.10542736e-15 Z M119.285384,149.333333 L144.649352,168.844078 L68.6167605,267.686446 
-                                    L1.42108547e-14,207.646781 L21.0721475,183.564327 L64.0400737,221.13838 L119.285384,149.333333 Z">
-                                    </path>
-                                </g>
+        switch (String(task.categoryId)){
+            // personal
+            case '1':
+                iconValue = `
+                    <svg fill="#b85d72" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 15.503A5.041 5.041 0 1 0 16 5.42a5.041 5.041 0 0 0 0 10.083zm0 2.215c-6.703 0-11 3.699-11 5.5v3.363h22v-3.363c0-2.178-4.068-5.5-11-5.5z"
+                        stroke-width="2"
+                    />
+                    </svg>
+                `;
+                categoryValue = 'Personal';
+                break
+            // academic
+            case '2':
+                iconValue = `
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 11.4999H7M6 15.4999H7M17 15.4999H18M17 11.4999H18M11.5 11.4999H12.5M10 20.9999V16.9999C10 15.8954 10.8954 
+                        14.9999 12 14.9999C13.1046 14.9999 14 15.8954 14 16.9999V20.9999M17 7.49995L18.5761 7.89398C19.4428 8.11064 19.8761 
+                        8.21898 20.1988 8.46057C20.4834 8.67373 20.7061 8.95895 20.8439 9.28682C21 9.65843 21 10.1051 21 10.9984V17.7999C21 
+                        18.9201 21 19.4801 20.782 19.9079C20.5903 20.2843 20.2843 20.5902 19.908 20.782C19.4802 20.9999 18.9201 20.9999 17.8 
+                        20.9999H6.2C5.0799 20.9999 4.51984 20.9999 4.09202 20.782C3.71569 20.5902 3.40973 20.2843 3.21799 19.9079C3 19.4801 3 
+                        18.9201 3 17.7999V10.9984C3 10.1051 3 9.65843 3.15613 9.28682C3.29388 8.95895 3.51657 8.67373 3.80124 8.46057C4.12389 
+                        8.21898 4.55722 8.11064 5.42388 7.89398L7 7.49995L9.85931 4.92657C10.6159 4.2456 10.9943 3.90512 11.4221 3.77598C11.799 
+                        3.66224 12.201 3.66224 12.5779 3.77598C13.0057 3.90512 13.3841 4.2456 14.1407 4.92657L17 7.49995Z" 
+                        stroke="#000000" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                `;
+                categoryValue = 'Academic';
+                break
+            // work
+            case '3':
+                iconValue = `
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 7H5C3.89543 7 3 7.89543 3 9V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V9C21 7.89543 20.1046 
+                        7 19 7H15M9 7V5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7M9 7H15" 
+                        stroke="#000000" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                `;
+                categoryValue = 'Work';
+                break
+            // errands
+            case '4':
+                iconValue = `
+                    <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <g fill="#ffffff" transform="translate(70.530593, 46.125620)">
+                                <path d="M185.469407,39.207713 L356.136074,39.207713 L356.136074,81.8743797 L185.469407,81.8743797 L185.469407,39.207713 
+                                Z M185.469407,188.541046 L356.136074,188.541046 L356.136074,231.207713 L185.469407,231.207713 L185.469407,188.541046 Z
+                                M14.8027404,295.207713 L121.469407,295.207713 L121.469407,401.87438 L14.8027404,401.87438 L14.8027404,295.207713 Z 
+                                M46.8027404,327.207713 L46.8027404,369.87438 L89.4694071,369.87438 L89.4694071,327.207713 L46.8027404,327.207713 Z 
+                                M185.469407,337.87438 L356.136074,337.87438 L356.136074,380.541046 L185.469407,380.541046 L185.469407,337.87438 Z 
+                                M119.285384,-7.10542736e-15 L144.649352,19.5107443 L68.6167605,118.353113 L1.42108547e-14,58.3134476 L21.0721475,34.2309934 
+                                L64.0400737,71.8050464 L119.285384,-7.10542736e-15 Z M119.285384,149.333333 L144.649352,168.844078 L68.6167605,267.686446 
+                                L1.42108547e-14,207.646781 L21.0721475,183.564327 L64.0400737,221.13838 L119.285384,149.333333 Z">
+                                </path>
                             </g>
-                        </svg>
-                    `;
-                    categoryValue = 'Errands';
-                    break
-                case '5':
-                    iconValue = `
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-                            <g fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21,12.2c-3.4,0-6.7-0.4-9.6-1.2c-0.2,1.3-0.4,2.7-0.4,4.1C11,23.9,15.5,31,21,31s10-7.1,10-15.9c0-1.4-0.1-2.8-0.4-4.1C27.7,11.8,24.4,12.2,21,12.2z"/>
-                                <path d="M21,24.1c-1.5,0-2.9-0.4-4-1.1c0.2,2.2,1.9,4,4,4s3.8-1.8,4-4C23.9,23.7,22.5,24.1,21,24.1z"/>
-                                <path d="M15,20c0-1.1,0.9-2,2-2s2,0.9,2,2"/>
-                                <path d="M23,20c0-1.1,0.9-2,2-2s2,0.9,2,2"/>
-                                <path d="M20,12.2c0.7-2.1,1-4.5,1-7c0-1.4-0.1-2.8-0.4-4.1c-3,0.8-6.2,1.2-9.6,1.2S4.3,1.8,1.4,1C1.1,2.3,1,3.7,1,5.1C1,13.9,5.5,21,11,21c0.2,0,0.5,0,0.7,0"/>
-                                <path d="M11,14.9c-1.5,0-2.9,0.4-4,1.1c0.2-2.2,1.9-4,4-4"/>
-                                <path d="M5,7c0,1.1,0.9,2,2,2s2-0.9,2-2"/>
-                                <path d="M13,7c0,1.1,0.9,2,2,2s2-0.9,2-2"/>
-                            </g>
-                        </svg>
-                    `;
-                    categoryValue = 'Entertainment';
-                    break
-            }
+                        </g>
+                    </svg>
+                `;
+                categoryValue = 'Errands';
+                break
+            // entertainment
+            case '5':
+                iconValue = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+                        <g fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21,12.2c-3.4,0-6.7-0.4-9.6-1.2c-0.2,1.3-0.4,2.7-0.4,4.1C11,23.9,15.5,31,21,31s10-7.1,10-15.9c0-1.4-0.1-2.8-0.4-4.1C27.7,11.8,24.4,12.2,21,12.2z"/>
+                            <path d="M21,24.1c-1.5,0-2.9-0.4-4-1.1c0.2,2.2,1.9,4,4,4s3.8-1.8,4-4C23.9,23.7,22.5,24.1,21,24.1z"/>
+                            <path d="M15,20c0-1.1,0.9-2,2-2s2,0.9,2,2"/>
+                            <path d="M23,20c0-1.1,0.9-2,2-2s2,0.9,2,2"/>
+                            <path d="M20,12.2c0.7-2.1,1-4.5,1-7c0-1.4-0.1-2.8-0.4-4.1c-3,0.8-6.2,1.2-9.6,1.2S4.3,1.8,1.4,1C1.1,2.3,1,3.7,1,5.1C1,13.9,5.5,21,11,21c0.2,0,0.5,0,0.7,0"/>
+                            <path d="M11,14.9c-1.5,0-2.9,0.4-4,1.1c0.2-2.2,1.9-4,4-4"/>
+                            <path d="M5,7c0,1.1,0.9,2,2,2s2-0.9,2-2"/>
+                            <path d="M13,7c0,1.1,0.9,2,2,2s2-0.9,2-2"/>
+                        </g>
+                    </svg>
+                `;
+                categoryValue = 'Entertainment';
+                break
+        }
+
+        // subject conditional
+        switch (String(task.subjectId)){
+            case '1':
+                subjectValue = 'ITAD';
+                break;
+            case '2':
+                subjectValue = 'MLDP';
+                break;
+            case '3':
+                subjectValue = 'FWEB';
+                break
+            case '4':
+                subjectValue = 'DVOPS';
+                break;
+            case '5':
+                subjectValue = 'CMATH';
+                break;
+            case '6':
+                subjectValue = 'PROCOMM';
+                break;
+            case '7':
+                subjectValue = 'GL';
+                break;
+            case '8':
+                subjectValue = 'SCA';
+                break;
+        }
 
         // priority conditional
-        switch (task.priorityId)
-            {
-                case '1':
-                    priorityValue = 'High';
-                    break
-                case '2':
-                    priorityValue = 'Medium';
-                    break
-                case '3':
-                    priorityValue = 'Low';
-                    break
-            }
+        switch (String(task.priorityId)){
+            // high
+            case '1':
+                priorityValue = 'High';
+                break
+            // medium
+            case '2':
+                priorityValue = 'Medium';
+                break
+            // low
+            case '3':
+                priorityValue = 'Low';
+                break
+        }
 
         // status conditional
-        switch (task.statusId) {
+        switch (String(task.statusId)) {
+            // overdue
             case '1':
                 statusClassNameBtn = 'status-overdue'
                 statusValue = 'Overdue';
                 break
+            // pending
             case '2':
                 statusClassNameBtn = 'status-pending'
                 statusValue = 'Pending';
                 break
+            // completed
             case '3':
                 statusClassNameBtn = 'status-completed'
                 statusValue = 'Completed'
@@ -184,7 +289,7 @@ function dynamicDisplayTasks(tasks) {
                     </div>
                 </td>
                 <td>${task.name}</td>
-                <td>${categoryValue}</td>
+                <td>${categoryValue == 'Academic' ? subjectValue : categoryValue}</td>
                 <td>${priorityValue}</td>
                 <td>
                     <button class="statusBtn ${statusClassNameBtn}">
@@ -225,7 +330,7 @@ function displayDynamicPageNumber() {
     var currentPageEle = document.getElementById('currentDisplayedValue');
     var totalTaskEle = document.getElementById('totalTaskValue');
 
-    if(allTasks < 1) {
+    if(allTasks.length < 1) {
         startIndex = 0;
         endIndex = 0
     }

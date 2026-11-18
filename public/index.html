@@ -22,12 +22,17 @@
         <aside class="sidebar">
             <!-- TODO: jorell to implement website name/logo -->
             <div class="sidebar-header">
-                <h2>Task Manager</h2> <!-- jorell you can change this if yw (NAME IT ANCHOVY) -->
+                <h2>SigTask Anchovy</h2> <!-- jorell you can change this if yw (NAME IT ANCHOVY) -->
             </div>
 
-            <!-- TODO: jorell to implement Create Task button -->
             <div class="sidebar-content">
-                <!-- Create Task button will be added here -->
+                <!-- Create Task button: opens the pop-out form (jorell.js) -->
+                <button type="button" id="createTaskBtn" class="create-task-btn" onclick="openCreateTaskModal()">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Create Task
+                </button>
             </div>
         </aside>
 
@@ -99,15 +104,16 @@
                         </thead>
                         <!-- Task rows to be inserted using JavaScript -->
                         <tbody id="taskTableBody">
-                            
+
                             <!-- add delete button -jorell -->
 
                         </tbody>
                     </table>
                 </div>
-                                           
-                <div id="noTaskTxt" >
-                    <span style="font-size: 1.2rem; display: flex; justify-content: center;">No task to display. Create a task to display in here</span>
+
+                <div id="noTaskTxt">
+                    <span style="font-size: 1.2rem; display: flex; justify-content: center;">No task to display. Create
+                        a task to display in here</span>
                 </div>
 
             </section>
@@ -126,7 +132,7 @@
                         <span id="totalTaskValue">
                             0
                         </span>
-                        <span>tasks</span> 
+                        <span>tasks</span>
                     </span>
                 </div>
                 <!-- next page button -->
@@ -135,5 +141,115 @@
             </div>
         </main>
     </div>
+    <!-- Create Task Pop-out (logic in js/jorell.js) -->
+    <div id="createTaskOverlay" class="modal-overlay">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="createTaskTitle">
+            <div class="modal-header">
+                <div>
+                    <h2 id="createTaskTitle">Create Task</h2>
+                    <p>Fill in the details of your new task</p>
+                </div>
+                <!-- Close "X" button -->
+                <button type="button" class="modal-close" aria-label="Close" onclick="closeCreateTaskModal()">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 6L18 18M18 6L6 18" stroke="#20352c" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="createTaskForm" novalidate onsubmit="submitCreateTask(event)">
+                <!-- General error (e.g. server not reachable) -->
+                <p id="createTaskFormError" class="form-banner-error" hidden></p>
+
+                <div class="form-grid">
+                    <!-- Name -->
+                    <div class="form-field full">
+                        <label for="ctName">Name <span class="required">*</span></label>
+                        <input type="text" id="ctName" maxlength="100" placeholder="Enter task name" autocomplete="off">
+                        <span class="field-error" id="ctNameError"></span>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-field">
+                        <label for="ctCategory">Category <span class="required">*</span></label>
+                        <select id="ctCategory" onchange="toggleSubjectField()">
+                            <option value="">Select category</option>
+                            <option value="1">Personal</option>
+                            <option value="2">Academic</option>
+                            <option value="3">Work</option>
+                            <option value="4">Errands</option>
+                            <option value="5">Entertainment</option>
+                        </select>
+                        <span class="field-error" id="ctCategoryError"></span>
+                    </div>
+
+                    <!-- Priority -->
+                    <div class="form-field">
+                        <label for="ctPriority">Priority <span class="required">*</span></label>
+                        <select id="ctPriority">
+                            <option value="">Select priority</option>
+                            <option value="1">High</option>
+                            <option value="2">Medium</option>
+                            <option value="3">Low</option>
+                        </select>
+                        <span class="field-error" id="ctPriorityError"></span>
+                    </div>
+
+                    <!-- Subject (only shown when category is Academic) -->
+                    <div class="form-field full" id="ctSubjectField" hidden>
+                        <label for="ctSubject">Subject <span class="required">*</span></label>
+                        <select id="ctSubject">
+                            <option value="">Select subject</option>
+                            <option value="1">ITAD</option>
+                            <option value="2">MLDP</option>
+                            <option value="3">FWEB</option>
+                            <option value="4">DVOPS</option>
+                            <option value="5">CMATH</option>
+                            <option value="6">PROCOMM</option>
+                            <option value="7">GL</option>
+                            <option value="8">SCA</option>
+                        </select>
+                        <span class="field-error" id="ctSubjectError"></span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="form-field full">
+                        <label for="ctStatus">Status <span class="required">*</span></label>
+                        <select id="ctStatus">
+                            <option value="">Select status</option>
+                            <option value="1">Overdue</option>
+                            <option value="2">Pending</option>
+                            <option value="3">Completed</option>
+                        </select>
+                        <span class="field-error" id="ctStatusError"></span>
+                    </div>
+
+                    <!-- End date -->
+                    <div class="form-field">
+                        <label for="ctEndDate">End Date <span class="required">*</span></label>
+                        <input type="date" id="ctEndDate">
+                        <span class="field-error" id="ctEndDateError"></span>
+                    </div>
+
+                    <!-- End time -->
+                    <div class="form-field">
+                        <label for="ctEndTime">End Time <span class="required">*</span></label>
+                        <input type="time" id="ctEndTime">
+                        <span class="field-error" id="ctEndTimeError"></span>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeCreateTaskModal()">Cancel</button>
+                    <button type="submit" id="createTaskSubmit" class="btn-primary">Create Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success message shown after a task is created -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
+
 </html>

@@ -14,6 +14,7 @@
     <script src="./js/jorell.js"></script>
     <script src="./js/weiye.js"></script>
     <script src="./js/jana.js"></script>
+    <script src="./js/ayers.js"></script>
 </head>
 
 <body onload="viewTask()">
@@ -36,11 +37,12 @@
 
             <!-- Search Bar and Task Count -->
             <div class="top-bar">
-                <!-- Search functionality is static, non-functional -->
-                <input type="text" id="searchTask" class="search-input" placeholder="Search task name">
+                <!-- Ayers: Search Tasks -->
+                <input type="text" id="searchTask" class="search-input" placeholder="Search task name"
+                       oninput="searchTasks()">
+                <p id="searchMessage" class="search-message"></p>
                 <p class="total-tasks">Total Tasks (<span id="totalTasks">0</span>)</p>
             </div>
-
 
             <!-- Task Manager Container -->
             <section class="task-container">

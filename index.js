@@ -20,8 +20,8 @@ const { viewTasks } = require('./utils/WeiYeUtil');
 app.get('/view-tasks', viewTasks)
 
 // GET API - Ayers
-const { viewTasks } = require('./utils/AyersUtil');
-app.get('/tasks/search?keyword=&category=&priority=&status=&sort=&order=',)
+const { searchTask } = require('./utils/AyersUtil');
+app.get('/tasks/search', searchTask);
 
 
 server = app.listen(PORT, function () {

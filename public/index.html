@@ -36,6 +36,11 @@
             </div>
         </aside>
 
+        <!-- Display error text when status code = 500 -->
+        <div style="height: 50%; margin: auto; font-size: 1.25rem;">
+            <span id="serverErrText"></span>
+        </div>
+
         <!-- Main Content -->
         <main class="main-content">
 
@@ -110,10 +115,9 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div id="noTaskTxt">
-                    <span style="font-size: 1.2rem; display: flex; justify-content: center;">No task to display. Create
-                        a task to display in here</span>
+                                           
+                <div id="noTaskTxtWrapper" >
+                    <span id="noTaskTxt" style="font-size: 1.2rem; display: flex; justify-content: center;"></span>
                 </div>
 
             </section>

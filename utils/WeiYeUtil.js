@@ -8,60 +8,11 @@ const TASK_FILE = path.join('utils', 'task.json');
 // view task
 async function viewTasks(req, res) {
     try {
-        const data = await fs.readFile(TASK_FILE, 'utf8');
-
-        // if no data in json file (e.g. file existed but no content inside the file)
-        if(!data) {
-            return res.status(400).json({ message: 'Empty JSON file'})
-        }
-        
-        const allTasks = JSON.parse(data);
-        // check if the structure in json file is valid. Invalid includes missing [] at the start
-        if(!Array.isArray(allTasks)) {
-            return res.status(400).json({ message: 'Invalid JSON structure' })
-        }
-
-        // iterate the list to get each item
-        for(var i = 0; i < allTasks.length; i++) {
-            // check if there is missing field(s) of a task
-            if(allTasks[i].id === undefined ||
-                allTasks[i].name === undefined ||
-                allTasks[i].categoryId === undefined ||
-                allTasks[i].priorityId === undefined ||
-                allTasks[i].statusId === undefined ||
-                allTasks[i].month === undefined ||
-                allTasks[i].year === undefined ||
-                allTasks[i].hour === undefined
-            ) {
-                return res.status(400).json({ message: 'Missing data field(s) of a task!' });
-            }
-        }
-
+        const allTasks = await sendErrorMessage()
         return res.status(200).json(allTasks);
 
     } catch (error) {
-        // Handle case where file does not exist yet
-        if (error.code === 'ENOENT') {
-            // return empty list if no file
-            return res.status(200).json([]); 
-        }
-        // Invalid JSON syntax such as missing curly braces
-        if (error instanceof SyntaxError) {
-            return res.status(400).json({
-                message: 'Invalid JSON syntax'
-            });
-        }
-
-        return res.status(500).json({ message: error.message });
-    }
-}
-
-async function errorMessage(allTasks) {
-    const data = await fs.readFile(TASK_FILE, 'utf8');
-
-    // if no data in json file (e.g. file existed but no content inside the file)
-    if(!data) {
-        return res.status(400).json({ message: 'Empty JSON file'})
+        jsonError(error)
     }
 }
 
@@ -69,42 +20,19 @@ async function errorMessage(allTasks) {
 async function getTaskById(req, res) {
     try {
         const {id} = req.params;
+        const allTasks = await sendErrorMessage()
+        // always return the index if found, otherwise return '-1'
+        const taskIndex = allTasks.find(t => String(t.id) === String(id));
 
-        const data = await fs.readFile(TASK_FILE, 'utf8');
-        const tasks = JSON.parse(data);
-
-        if (!Array.isArray(tasks)) {
-            return res.status(400).json({
-                message: 'Invalid JSON structure'
-            });
+        // check if the task index is found
+        if (taskIndex === -1) {
+            return res.status(404).json({ message: 'Task not found.' });
         }
 
-        const task = tasks.find(t => String(t.id) === String(id));
-
-        if (!task) {
-            return res.status(404).json({
-                message: 'Task not found.'
-            });
-        }
-
-        return res.status(200).json(task);
+        return res.status(200).json(taskIndex);
 
     } catch(error) {
-        if (error.code === 'ENOENT') {
-            return res.status(404).json({
-                message: 'No tasks found.'
-            });
-        }
-
-        if (error instanceof SyntaxError) {
-            return res.status(400).json({
-                message: 'Invalid JSON syntax'
-            });
-        }
-
-        return res.status(500).json({
-            message: error.message
-        });
+        jsonError(error)
     }
 }
 
@@ -116,13 +44,8 @@ async function editTask(req, res) {
         let tasks = [];
 
         try {
-            const data = await fs.readFile(TASK_FILE, 'utf-8');
-            tasks = JSON.parse(data);
-
-            // check if the structure in json file is valid. Invalid includes missing [] at the start
-            if(!Array.isArray(tasks)) {
-                return res.status(400).json({ message: 'Invalid JSON structure' })
-            }
+            // if no error found, return allTasks
+            await sendErrorMessage();
 
         } catch (error) {
             // cannot find the task.json file
@@ -134,7 +57,7 @@ async function editTask(req, res) {
         }
 
         // store the index found in the array. Search through each task and match if the task id is the same as the id I am searching for.
-        const taskIndex = tasks.findIndex(t => t.id == id);
+        const taskIndex = tasks.findIndex(t => String(t.id) == String(id));
         // findIndex returns the index value when found or -1 when not found
         // if the task id is not found
         if (taskIndex === -1) {
@@ -158,9 +81,57 @@ async function editTask(req, res) {
         return res.status(200).json({ message: 'Task updated successfully!', task: tasks[taskIndex] });
 
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: error.message });
+        jsonError(error)
     }
+}
+// catch other json error related
+function jsonError(error) {
+    // Handle case where file does not exist yet
+    if (error.code === 'ENOENT') {
+        // return empty list if no file
+        return res.status(200).json([]); 
+    }
+    // Invalid JSON syntax such as missing curly braces
+    if (error instanceof SyntaxError) {
+        return res.status(400).json({
+            message: 'Invalid JSON syntax'
+        });
+    }
+
+    return res.status(500).json({ message: error.message });
+}
+// backend validations
+async function sendErrorMessage(allTasks) {
+    const data = await fs.readFile(TASK_FILE, 'utf8');
+
+    // if no data in json file (e.g. file existed but no content inside the file)
+    if(!data) {
+        return res.status(400).json({ message: 'Empty JSON file'})
+    }
+
+    const allTasks = JSON.parse(data);
+    // check if the structure in json file is valid. Invalid includes missing [] at the start
+    if(!Array.isArray(allTasks)) {
+        return res.status(400).json({ message: 'Invalid JSON structure' })
+    }
+
+    // iterate the list to get each item
+    for(var i = 0; i < allTasks.length; i++) {
+        // check if there is missing field(s) of a task
+        if(allTasks[i].id === undefined ||
+            allTasks[i].name === undefined ||
+            allTasks[i].categoryId === undefined ||
+            allTasks[i].priorityId === undefined ||
+            allTasks[i].statusId === undefined ||
+            allTasks[i].month === undefined ||
+            allTasks[i].year === undefined ||
+            allTasks[i].hour === undefined
+        ) {
+            return res.status(400).json({ message: 'Missing data field(s) of a task!' });
+        }
+    }
+    // if no errors, return all tasks
+    return allTasks
 }
 
 module.exports = { 

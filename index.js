@@ -8,9 +8,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("./public"));
 
-const { sortTasks } = require('./utils/JanaUtil');
-app.get('/tasks', sortTasks); // GET API but with sorting functionality: Jana
-
 app.get('/', (req, res) => {
     res.sendFile(__dirname + "/public/" + startPage);
 })
@@ -18,6 +15,13 @@ app.get('/', (req, res) => {
 // GET API - Wei Ye
 const { viewTasks } = require('./utils/WeiYeUtil');
 app.get('/view-tasks', viewTasks)
+
+// GET API but with sorting functionality: Jana
+const { sortTasks } = require('./utils/JanaUtil');
+app.get('/tasks', sortTasks); 
+
+
+
 
 server = app.listen(PORT, function () {
     const address = server.address();

@@ -366,33 +366,33 @@ function nextPage() {
 }
 
 // edit task
+
+let currentTaskId = null;
+
 // get task data by ID
 async function getTaskById(taskId) {
     var apiUrl = `/tasks/${taskId}`;
 
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'GET'
-        })
+    const response = await fetch(apiUrl, {
+        method: 'GET'
+    })
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if(!response.ok) {
-            throw new Error(data.message || 'Server is not responding.');
-        }
-        
-        return data;
-        
-    } catch(error) {
-        console.error('Error: ', error);
+    if(!response.ok) {
+        throw new Error(data.message || 'Server is not responding.');
     }
+    
+    return data;
 }
 
 // Pre-fill data to the input elements in the modal pop-up
 async function displayDataInModal(btn) {
     var id = btn.getAttribute('restId')
 
-    const task = await getTaskById(id)
+    const task = await getTaskById(id);
+
+    currentTaskId = task.id;
 
     // match corresponding month and output the value using dict[index]
     var numericMonth = {
@@ -422,7 +422,6 @@ async function displayDataInModal(btn) {
     document.getElementById('editStatus').value = task.statusId;
     document.getElementById('editEndDate').value = endDateFormat;
     document.getElementById('editEndTime').value = endTimeFormat;
-    document.getElementById('taskId').value = task.id;
 
     // check if the subject value of the task is null
     var subjectContainer = document.getElementById('subject-container');
@@ -496,7 +495,7 @@ document.getElementById('editForm').addEventListener("submit", function(event) {
 
 // submit updated data to the backend API
 function updateTask() {
-    var id = document.getElementById('taskId').value;
+    const id = currentTaskId;
     var name = document.getElementById('editName').value;
     var categoryId = document.getElementById('editCategory').value;
     var subjectId = document.getElementById('editSubject').value;

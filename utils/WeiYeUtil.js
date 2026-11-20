@@ -69,6 +69,10 @@ async function editTask(req, res) {
         if (taskIndex === -1) {
             return res.status(404).json({ message: 'Task not found.' });
         }
+        // Reference from JorellUtil.js, validateNewTask() function
+        if(name.length > 100) {
+            return res.status(404).json({ message: 'Task name must be 100 characters or fewer.'})
+        }
         
         if(name === null ||
             categoryId === null ||

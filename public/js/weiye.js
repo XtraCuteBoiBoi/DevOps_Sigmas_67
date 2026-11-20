@@ -493,6 +493,9 @@ document.getElementById('editForm').addEventListener("submit", function(event) {
     updateTask()
 })
 
+// Reference from JorellUtil.js, validateNewTask() function
+const maxNameLength = 100
+
 // submit updated data to the backend API
 function updateTask() {
     const id = currentTaskId;
@@ -506,6 +509,11 @@ function updateTask() {
 
     if(name.trim() === '') {
         alert("Task name must not be empty!")
+        return;
+    }
+
+    if(name.length > 100) {
+        alert(`Task name must be ${maxNameLength} characters or fewer.`);
         return;
     }
 

@@ -576,8 +576,6 @@ async function sendUpdatedTask(id, jsonData) {
             throw new Error(data.message ||'Server is not responding.');
         }
 
-        console.log('updatedData', data);
-
         if (data.message == "Task updated successfully!") {
             alert("Task updated successfully!");
             closeEditTaskModal()

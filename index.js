@@ -37,4 +37,8 @@ server = app.listen(PORT, function () {
     console.log(`Demo project at: ${baseUrl}`);
 });
 
+// POST API - Create task: Jorell
+const { createTask } = require('./utils/JorellUtil');
+app.post('/create-task', createTask);
+
 module.exports = { app, server }

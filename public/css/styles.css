@@ -376,6 +376,8 @@ path {
 }
 
 
+/* ===== Ayers: Search Tasks ===== */
+
 /* ===== Create Task (jorell) ===== */
 
 /* Create Task button (sidebar) */
@@ -547,6 +549,13 @@ path {
     font-size: 14px;
     font-weight: 600;
 }
+
+.search-message {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+}
+
 
 /* Pop-out buttons */
 .modal-actions {
@@ -829,4 +838,16 @@ path {
     font-size: 15px;
     font-weight: 700;
     white-space: nowrap;
+}
+
+.search-message.success {
+    color: #1b9300;
+}
+
+.search-message.info {
+    color: #b98202;
+}
+
+.search-message.error {
+    color: #b90202;
 }

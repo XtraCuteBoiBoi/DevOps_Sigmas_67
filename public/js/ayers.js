@@ -2,10 +2,12 @@
 // Reuses Wei Ye's dynamicDisplayTasks() so search results look the same as the normal task list
 
 const AYERS_MAX_KEYWORD_LENGTH = 50;
-const AYERS_KEYWORD_PATTERN = /^[a-zA-Z0-9\s\-'.,&()@]*$/;   // letters, numbers, spaces, basic punctuation
+const AYERS_KEYWORD_PATTERN = /^[a-zA-Z0-9 \-'.,&()@]*$/;   // letters, numbers, spaces, basic punctuation
+let ayersLatestSearchId = 0;   // used to ignore results from older, slower searches
 
 // Runs every time the user types in the search bar
 async function searchTasks() {
+    const searchId = ++ayersLatestSearchId;   // this is now the newest search
     const keyword = document.getElementById('searchTask').value.trim();
 
     // Empty search box → go back to the full task list (Wei Ye's view)
@@ -34,9 +36,13 @@ async function searchTasks() {
         data = await response.json();
     } catch (error) {
         console.error('Search request failed:', error);
+        if (searchId !== ayersLatestSearchId) return;   // an old search failed; a newer one is running
         showSearchMessage('Could not reach the server: ' + error.message, 'error');
         return;
     }
+
+    // A newer search was started while this one was waiting → ignore this old result
+    if (searchId !== ayersLatestSearchId) return;
 
     // Server rejected the search (400) or something broke (500)
     if (!response.ok) {

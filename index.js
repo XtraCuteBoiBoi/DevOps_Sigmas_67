@@ -8,6 +8,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("./public"));
 
+const { searchTask } = require('./utils/AyersUtil');
 const { createTask } = require('./utils/JorellUtil');
 const { viewTasks, getTaskById, editTask } = require('./utils/WeiYeUtil');
 const { sortTasks } = require('./utils/JanaUtil');
@@ -17,6 +18,8 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + "/public/" + startPage);
 })
 
+// GET API (search tasks) - Ayers
+app.get('/tasks/search', searchTask);
 // GET API (display all tasks) - Wei Ye
 app.get('/view-tasks', viewTasks);
 // GET API with sorting functionality - Jana
@@ -30,10 +33,6 @@ app.put('/tasks/:id', editTask);
 
 
 
-
-// GET API - Ayers
-const { searchTask } = require('./utils/AyersUtil');
-app.get('/tasks/search', searchTask);
 
 
 server = app.listen(PORT, function () {

@@ -18,6 +18,7 @@ body {
 
 button {
     background-color: #b85d72;
+    border-radius: 10px;
 }
 
 svg {
@@ -28,6 +29,8 @@ svg {
 path {
     stroke-width: 2;
 }
+
+
 
 /* Main Layout */
 .page-layout {
@@ -295,6 +298,7 @@ path {
     font-weight: 700;
 }
 
+
 /* ===== Create Task (jorell) ===== */
 
 /* Create Task button (sidebar) */
@@ -355,6 +359,8 @@ path {
 .modal [hidden] {
     display: none;
 }
+
+
 
 .modal-header {
     display: flex;
@@ -535,4 +541,117 @@ path {
     .form-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Update Modal Styling */
+.modal-wrapper {
+    position: fixed;
+    background-color: var(--primary-colour);
+    border: 2px solid black;
+    border-radius: 10px;
+    width: 40%;
+    height: 32rem;
+    top: 2vh;
+    margin: 6% 31%;
+    padding: 1.5rem;
+    display: none;
+}
+
+.modal-header-wrapper {    
+    display: flex; 
+    justify-content: center; 
+    position: relative;
+}
+
+.modal-header-text {
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.modal-header-wrapper button {
+    display: flex;
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-header-wrapper button:hover {
+    background-color: var(--hover-colour);
+}
+
+.modal-header-wrapper button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.modal-wrapper input, .modal-wrapper select {
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+.modal-wrapper select:focus, .modal-wrapper input:focus {
+    outline: none;
+}
+
+.edit-input-container {
+    margin-top: 2%;
+}
+
+.edit-input-container button {
+    padding: 10px;
+    color: var(--primary-colour);
+    cursor: pointer;
+    border: none;
+}
+
+.edit-input-container button:hover {
+    background-color: var(--hover-colour);
+}
+
+.row-content {
+    display: flex; 
+    justify-content: space-between; 
+    gap: 1rem;
+}
+
+/* container for each input */
+.input-container {
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    & label {
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+    }
+}
+
+#updatedNotificationContainer {
+    position: absolute;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: #20352c;
+    border: 2px solid black;
+    border-radius: 10px;
+    width: 20%;
+    min-height: 1rem;
+    height: auto;
+    top: 5vh;
+    right: 2.4rem;
+    padding: 0.8rem;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    color: white;
+}
+
+#updatedTaskName {
+    font-weight: 700;
 }

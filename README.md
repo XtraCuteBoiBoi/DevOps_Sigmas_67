@@ -154,10 +154,9 @@ main
 ```
 
 ### Development Workflow
-- Create or switch to the relevant feature branch
-- Implement the backend functionality
+- Create/Switch to the relevant feature branch
 - Test API endpoints using Postman
-- Implement and test the frontend functionality
+- Implement and test frontend & backend functionality
 - Commit changes with descriptive messages
 - Push the feature branch to GitHub
 - Create a pull request targeting main
@@ -180,9 +179,9 @@ Backend functionality is tested through Postman, while frontend functionality is
 
 Testing covers:
 - Successful retrieval of task data
-- Successful creation/posting of task data
+- Successful creation of task data
+- Successful updating of task data
 - Successful deletion of task data
-- Successful modification/updating of task data
 - Sorting by name, priority, and date
 - Filtering by category, status, and subject
 - Multiple filtering conditions
@@ -209,6 +208,9 @@ This project was developed by a team of four students as part of the DevOps Esse
 | Wei Ye | View and Edit Tasks |
 | Jana | Sort and Filter Tasks |
 | Ayers | Search Tasks |
+
+## Teaching Tutor
+Mr Allen
 
 ## License
 

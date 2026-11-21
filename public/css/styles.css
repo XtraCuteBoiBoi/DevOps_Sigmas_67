@@ -293,3 +293,23 @@ path {
     font-size: 14px;
     font-weight: 700;
 }
+
+
+/* ===== Ayers: Search Tasks ===== */
+.search-message {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.search-message.success {
+    color: #1b9300;
+}
+
+.search-message.info {
+    color: #b98202;
+}
+
+.search-message.error {
+    color: #b90202;
+}

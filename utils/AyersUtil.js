@@ -9,7 +9,7 @@ const TASK_FILE = path.join(__dirname, 'task.json');
 
 // Validation rules for the search keyword
 const MAX_KEYWORD_LENGTH = 50;
-const KEYWORD_PATTERN = /^[a-zA-Z0-9\s\-'.,&()@]*$/;   // letters, numbers, spaces, basic punctuation
+const KEYWORD_PATTERN = /^[a-zA-Z0-9 \-'.,&()@]*$/;   // letters, numbers, spaces, basic punctuation
 
 // Checks the search query and returns a list of error messages (empty if valid)
 function validateSearchQuery(query) {
@@ -45,9 +45,15 @@ async function searchTask(req, res) {
         const data = await fs.readFile(TASK_FILE, 'utf8');
         const allTasks = JSON.parse(data);
 
+        // The data store must be a list of tasks
+        if (!Array.isArray(allTasks)) {
+            throw new Error('task.json does not contain a list of tasks');
+        }
+
         // Keep tasks whose name contains the keyword (case-insensitive)
         const results = allTasks.filter(task =>
-            (task.name || '').toLowerCase().includes(keyword)
+            task && typeof task.name === 'string' &&
+            task.name.toLowerCase().includes(keyword)
         );
 
         // No tasks matched → 200 with an empty list and a message
@@ -63,8 +69,9 @@ async function searchTask(req, res) {
         if (error.code === 'ENOENT') {
             return res.status(200).json({ message: 'No tasks yet', count: 0, tasks: [] });
         }
-        // Anything else (e.g. broken JSON) → 500
-        return res.status(500).json({ message: error.message });
+        // Anything else (e.g. broken JSON) → log the details, send a general message → 500
+        console.error('Search failed:', error);
+        return res.status(500).json({ message: 'Unable to search tasks right now. Please try again later.' });
     }
 }
 

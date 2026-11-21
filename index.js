@@ -31,6 +31,11 @@ app.put('/tasks/:id', editTask);
 
 
 
+// GET API - Ayers
+const { searchTask } = require('./utils/AyersUtil');
+app.get('/tasks/search', searchTask);
+
+
 server = app.listen(PORT, function () {
     const address = server.address();
     const baseUrl = `http://${address.address == "::" ? 'localhost' : address.address}:${address.port}`;

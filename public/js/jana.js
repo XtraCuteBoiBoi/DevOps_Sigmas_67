@@ -38,17 +38,17 @@ function sortTask() { // Function to sort task
             totalTaskValue(totalTasks); // Update total task count in the UI
 
             if (totalTasks === 0) {
-                document.querySelector('#noTaskTxt span').textContent = 'No tasks match the selected filters.';
+                document.getElementById('noTaskTxt').textContent = 'No tasks match the selected filters.';
 
                 document.getElementById('taskTableBody').innerHTML = '';
                 document.querySelector('.table-wrapper').style.display = 'none';
-                document.getElementById('noTaskTxt').style.display = 'block';
+                document.getElementById('noTaskTxtWrapper').style.display = 'block';
 
                 displayDynamicPageNumber();
                 return;
             }
 
-            document.getElementById('noTaskTxt').style.display = 'none';
+            document.getElementById('noTaskTxtWrapper').style.display = 'none';
             document.querySelector('.table-wrapper').style.display = 'block';
             // Display the first page of sorted tasks (reuse wei ye's rendering function)
             dynamicDisplayTasks(allTasks.slice(0, maxNumTasksPerPage));
@@ -154,16 +154,16 @@ function filterTask() { // Function to filter tasks
             totalTaskValue(totalTasks);
 
             if (filteredTasks.length === 0) {
-                document.querySelector('#noTaskTxt span').textContent =
+                document.getElementById('noTaskTxt').textContent =
                     params.length > 0
                         ? 'No tasks match the selected filters.'
                         : 'No task to display. Create a task to display in here';
 
                 document.getElementById('taskTableBody').innerHTML = '';
                 document.querySelector('.table-wrapper').style.display = 'none';
-                document.getElementById('noTaskTxt').style.display = 'block';
+                document.getElementById('noTaskTxtWrapper').style.display = 'block';
             } else {
-                document.getElementById('noTaskTxt').style.display = 'none';
+                document.getElementById('noTaskTxtWrapper').style.display = 'none';
                 document.querySelector('.table-wrapper').style.display = 'block';
                 dynamicDisplayTasks(allTasks.slice(0, maxNumTasksPerPage));
             }

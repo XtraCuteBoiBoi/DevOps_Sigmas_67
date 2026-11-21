@@ -456,13 +456,12 @@ function showSubjects() {
 
 // open modal
 function openEditTaskModal() {
-    var modalEle = document.getElementById('edit-modal');
+    var modalEle = document.getElementById('edit-modal-overlay');
     var contentLayoutEle = document.getElementById('content-layout')
 
     // 'appear' mode for modal to appear
     modalEle.style.display = "block";
     // increase opacity, allow cursor only to default (else it still can select or click other things in the background) and no pointerevent
-    contentLayoutEle.style.opacity = "0"
     contentLayoutEle.style.cursor = "cursor"
     // by setting pointerEvent to none, it only allow to interact with the modal only (cannot interact elements, etc in the background)
     contentLayoutEle.style.pointerEvents = "none"
@@ -470,7 +469,7 @@ function openEditTaskModal() {
 
 // close modal
 function closeEditTaskModal() {
-    var modalEle = document.getElementById('edit-modal');
+    var modalEle = document.getElementById('edit-modal-overlay');
     var contentLayoutEle = document.getElementById('content-layout')
 
     // 'appear' mode for modal to appear

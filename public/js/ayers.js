@@ -68,13 +68,17 @@ function showSearchResults(data) {
     // No matches → empty table and a message
     if (tasks.length === 0) {
         document.getElementById('taskTableBody').innerHTML = '';
+        document.getElementById('searchMessage').textContent = '';
+        document.getElementById('noTaskTxt').textContent = data.message || 'No tasks match your search.';
+        document.getElementById('noTaskTxtWrapper').style.display = 'block';
+        document.querySelector('.table-wrapper').style.display = 'none';
         displayDynamicPageNumber();
-        showSearchMessage(data.message, 'info');
         return;
     }
 
     // Matches → show the first page using Wei Ye's row builder
-    showSearchMessage(`${data.count} task(s) found`, 'success');
+    document.getElementById('noTaskTxtWrapper').style.display = 'none';
+    showSearchMessage('', '');
     dynamicDisplayTasks(tasks.slice(0, maxNumTasksPerPage));
 }
 

@@ -30,11 +30,11 @@ function viewTask() {
     .catch(error => {
         console.error('Error:', error);
         // display error text
-        displayServerErrText(error)
+        displayErrorText(error)
     });
 }
 // display error text to frontend
-function displayServerErrText(err) {
+function displayErrorText(err) {
     var mainEle = document.querySelector('main');
     var spanEle = document.getElementById('serverErrText');
 
@@ -93,7 +93,7 @@ function dynamicDisplayTasks(tasks) {
     var iconValue = '';
 
      // Display txt if no data is created in DB
-    if(remainingTasks.length < 1) {
+    if(allTasks.length < 1) {
         tableEle.style.display = "none";
         divEle.innerText = 'No task to display. Create a task to display in here.'
         divEle.style.display = "block"
@@ -107,7 +107,6 @@ function dynamicDisplayTasks(tasks) {
 
         // store the item into a variable
         task = tasks[i]
-        console.log('task', task)
 
         // check if any fields are missing
         if(task.id === undefined ||
@@ -277,6 +276,7 @@ function dynamicDisplayTasks(tasks) {
         }
 
         dueDateFormat = `${task.month} ${task.year}, ${task.hour}`;
+        var counter = 0
     
         container += `
             <tr>
@@ -300,7 +300,7 @@ function dynamicDisplayTasks(tasks) {
                 <td style="display: flex; gap: 10px;">
                     <!-- edit button -->
                     <div>
-                        <button class="action-btn">
+                        <button class="action-btn" onclick='displayDataInModal(this)' restId="${task.id}">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M21.2799 6.40005L11.7399 15.94C10.7899 16.89 7.96987 17.33 7.33987 16.7C6.70987 16.07 7.13987 13.25 8.08987 
                                 12.3L17.6399 2.75002C17.8754 2.49308 18.1605 2.28654 18.4781 2.14284C18.7956 1.99914 19.139 1.92124 19.4875 1.9139C19.8359 
@@ -316,6 +316,8 @@ function dynamicDisplayTasks(tasks) {
                 </td>
             </tr>
         `;
+
+        counter+1
     }
 
     htmlEle.innerHTML = container;
@@ -363,3 +365,241 @@ function nextPage() {
     }
 }
 
+// edit task
+
+let currentTaskId = null;
+
+// get task data by ID
+async function getTaskById(taskId) {
+    var apiUrl = `/tasks/${taskId}`;
+
+    const response = await fetch(apiUrl, {
+        method: 'GET'
+    })
+
+    const data = await response.json();
+
+    if(!response.ok) {
+        throw new Error(data.message || 'Server is not responding.');
+    }
+    
+    return data;
+}
+
+// Pre-fill data to the input elements in the modal pop-up
+async function displayDataInModal(btn) {
+    var id = btn.getAttribute('restId')
+
+    const task = await getTaskById(id);
+
+    currentTaskId = task.id;
+
+    // match corresponding month and output the value using dict[index]
+    var numericMonth = {
+        "Jan": "01",
+        "Feb": "02",
+        "Mar": "03",
+        "Apr": "04",
+        "May": "05",
+        "Jun": "06",
+        "Jul": "07",
+        "Aug": "08",
+        "Sep": "09",
+        "Oct": "10",
+        "Nov": "11",
+        "Dec": "12",
+    }
+
+    // format date and time
+    var endDateFormat = `${task.year}-${numericMonth[task.month]}-01`;
+    var endTimeFormat = `${task.hour}:00`;
+
+    // display value into input fields
+    document.getElementById('editName').value = task.name;
+    document.getElementById('editCategory').value = task.categoryId;
+    document.getElementById('editSubject').value = task.subjectId ?? '';
+    document.getElementById('editPriority').value = task.priorityId;
+    document.getElementById('editStatus').value = task.statusId;
+    document.getElementById('editEndDate').value = endDateFormat;
+    document.getElementById('editEndTime').value = endTimeFormat;
+
+    // check if the subject value of the task is null
+    var subjectContainer = document.getElementById('subject-container');
+    // hide subject input if value is null
+    if(task.subjectId === null) {
+        subjectContainer.style.display = "none";
+    } else {
+        subjectContainer.style.display = "flex";
+    }
+
+    // open modal
+    openEditTaskModal()
+}
+
+// display subject input field whenever 'Academic' value in category field is clicked
+function showSubjects() {
+    var subjectDiv = document.getElementById('subject-container');
+    var subjectInput = document.getElementById('editSubject');
+    var categoryValue = document.getElementById('editCategory').value;
+
+    if(categoryValue === '2') {
+        subjectDiv.style.display = "flex";
+        subjectInput.required = true;
+        subjectInput.disabled = false;
+    } else {
+        subjectDiv.style.display = "none";
+        subjectInput.required = false;
+        subjectInput.disabled = true;
+        subjectInput.value = '';
+    }
+}
+
+// open modal
+function openEditTaskModal() {
+    var modalEle = document.getElementById('edit-modal');
+    var contentLayoutEle = document.getElementById('content-layout')
+
+    // 'appear' mode for modal to appear
+    modalEle.style.display = "block";
+    // increase opacity, allow cursor only to default (else it still can select or click other things in the background) and no pointerevent
+    contentLayoutEle.style.opacity = "0"
+    contentLayoutEle.style.cursor = "cursor"
+    // by setting pointerEvent to none, it only allow to interact with the modal only (cannot interact elements, etc in the background)
+    contentLayoutEle.style.pointerEvents = "none"
+}
+
+// close modal
+function closeEditTaskModal() {
+    var modalEle = document.getElementById('edit-modal');
+    var contentLayoutEle = document.getElementById('content-layout')
+
+    // 'appear' mode for modal to appear
+    modalEle.style.display = "none";
+    // increase opacity, allow cursor only to default (else it still can select or click other things in the background) and no pointerevent
+    contentLayoutEle.style.opacity = "1"
+    contentLayoutEle.style.cursor = "default"
+    // by setting pointerEvent to none, it only allow to interact with the modal only (cannot interact elements, etc in the background)
+    contentLayoutEle.style.pointerEvents = "auto"
+}
+
+// close button in the modal
+function closeEditButton() {
+    closeEditTaskModal()
+}
+
+// listen to submit button when on clicked
+document.getElementById('editForm').addEventListener("submit", function(event) {
+    event.preventDefault();
+    updateTask()
+})
+
+// Reference from JorellUtil.js, validateNewTask() function
+const maxNameLength = 100
+
+// submit updated data to the backend API
+function updateTask() {
+    const id = currentTaskId;
+    var name = document.getElementById('editName').value;
+    var categoryId = document.getElementById('editCategory').value;
+    var subjectId = document.getElementById('editSubject').value;
+    var priorityId = document.getElementById('editPriority').value;
+    var statusId = document.getElementById('editStatus').value;
+    var endDate = document.getElementById('editEndDate').value;
+    var endTime = document.getElementById('editEndTime').value;
+
+    if(name.trim() === '') {
+        alert("Task name must not be empty!")
+        return;
+    }
+
+    if(name.length > 100) {
+        alert(`Task name must be ${maxNameLength} characters or fewer.`);
+        return;
+    }
+
+    // sample data: 2026-11-01 14:00:00
+    var [year, month] = endDate.split('-')
+    var [hour, second] = endTime.split(':')
+    // format hour
+    hour = `${hour}:${second}`;
+
+    // match numbers to month (words)
+    const months = {
+        "01": "Jan",
+        "02": "Feb",
+        "03": "Mar",
+        "04": "Apr",
+        "05": "May",
+        "06": "Jun",
+        "07": "Jul",
+        "08": "Aug",
+        "09": "Sep",
+        "10": "Oct",
+        "11": "Nov",
+        "12": "Dec",
+    }
+
+    // if category is not "Academic", set the subjectId to null to prevent saving the previous subjectId value if any
+    if(categoryId !== '2') {
+        subjectId = null;
+    }
+
+    // create JSON object from input fields
+    var jsonData = {
+        name: name.trim(),
+        categoryId: categoryId,
+        subjectId: subjectId,
+        priorityId: priorityId,
+        statusId: statusId,
+        month: months[month],
+        year: year,
+        hour: hour
+    }
+
+    // call the API and send updated task to DB
+    sendUpdatedTask(id, jsonData)
+}
+// call API to update data in DB
+async function sendUpdatedTask(id, jsonData) {
+    try {
+        const response = await fetch(`/tasks/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message ||'Server is not responding.');
+        }
+
+        if (data.message == "Task updated successfully!") {
+            alert("Task updated successfully!");
+            closeEditTaskModal()
+            showUpdatedSuccessNotifcation(data.task.name)
+            viewTask();
+            
+        } else {
+            alert("Unable to update task!");
+        }
+
+    } catch(error) {
+        console.error(error);
+    }
+}
+
+// display a notifiction top-right corner that task has been updated successfully
+function showUpdatedSuccessNotifcation(name) {
+    var notiContainer = document.getElementById('updatedNotificationContainer');
+    var taskName = document.getElementById('updatedTaskName');
+
+    taskName.innerText = `"${name}"`
+    notiContainer.style.display = "block"
+
+    setTimeout(() => {
+        notiContainer.style.display = "none"
+    }, 5000)
+}

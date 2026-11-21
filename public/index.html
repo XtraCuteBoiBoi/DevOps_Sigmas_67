@@ -11,23 +11,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- External CSS -->
     <link rel="stylesheet" href="css/styles.css">
-    <script src="./js/jorell.js"></script>
-    <script src="./js/weiye.js"></script>
-    <script src="./js/jana.js"></script>
+    <script src="./js/jorell.js" defer></script>
+    <script src="./js/weiye.js" defer></script>
+    <script src="./js/jana.js" defer></script>
+    <script src="./js/ayers.js" defer></script>
 </head>
 
 <body onload="viewTask()">
-    <div class="page-layout">
+
+    <div class="page-layout" id="content-layout">
         <!-- Sidebar -->
         <aside class="sidebar">
             <!-- TODO: jorell to implement website name/logo -->
             <div class="sidebar-header">
-                <h2>Task Manager</h2> <!-- jorell you can change this if yw (NAME IT ANCHOVY) -->
+                <h2>SigTask Anchovy</h2> <!-- jorell you can change this if yw (NAME IT ANCHOVY) -->
             </div>
 
-            <!-- TODO: jorell to implement Create Task button -->
             <div class="sidebar-content">
-                <!-- Create Task button will be added here -->
+                <!-- Create Task button: opens the pop-out form (jorell.js) -->
+                <button type="button" id="createTaskBtn" class="create-task-btn" onclick="openCreateTaskModal()">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Create Task
+                </button>
             </div>
         </aside>
 
@@ -41,11 +48,12 @@
 
             <!-- Search Bar and Task Count -->
             <div class="top-bar">
-                <!-- Search functionality is static, non-functional -->
-                <input type="text" id="searchTask" class="search-input" placeholder="Search task name">
+                <!-- Ayers: Search Tasks -->
+                <input type="text" id="searchTask" class="search-input" placeholder="Search task name"
+                       oninput="searchTasks()">
+                <p id="searchMessage" class="search-message"></p>
                 <p class="total-tasks">Total Tasks (<span id="totalTasks">0</span>)</p>
             </div>
-
 
             <!-- Task Manager Container -->
             <section class="task-container">
@@ -143,7 +151,7 @@
                         </thead>
                         <!-- Task rows to be inserted using JavaScript -->
                         <tbody id="taskTableBody">
-                            
+
                             <!-- add delete button -jorell -->
 
                         </tbody>
@@ -170,7 +178,7 @@
                         <span id="totalTaskValue">
                             0
                         </span>
-                        <span>tasks</span> 
+                        <span>tasks</span>
                     </span>
                 </div>
                 <!-- next page button -->
@@ -179,5 +187,234 @@
             </div>
         </main>
     </div>
+
+    <!-- Create Task Pop-out (logic in js/jorell.js) -->
+    <div id="createTaskOverlay" class="modal-overlay">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="createTaskTitle">
+            <div class="modal-header">
+                <div>
+                    <h2 id="createTaskTitle">Create Task</h2>
+                    <p>Fill in the details of your new task</p>
+                </div>
+                <!-- Close "X" button -->
+                <button type="button" class="modal-close" aria-label="Close" onclick="closeCreateTaskModal()">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 6L18 18M18 6L6 18" stroke="#20352c" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="createTaskForm" novalidate onsubmit="submitCreateTask(event)">
+                <!-- General error (e.g. server not reachable) -->
+                <p id="createTaskFormError" class="form-banner-error" hidden></p>
+
+                <div class="form-grid">
+                    <!-- Name -->
+                    <div class="form-field full">
+                        <label for="ctName">Name <span class="required">*</span></label>
+                        <input type="text" id="ctName" maxlength="100" placeholder="Enter task name" autocomplete="off">
+                        <span class="field-error" id="ctNameError"></span>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-field">
+                        <label for="ctCategory">Category <span class="required">*</span></label>
+                        <select id="ctCategory" onchange="toggleSubjectField()">
+                            <option value="">Select category</option>
+                            <option value="1">Personal</option>
+                            <option value="2">Academic</option>
+                            <option value="3">Work</option>
+                            <option value="4">Errands</option>
+                            <option value="5">Entertainment</option>
+                        </select>
+                        <span class="field-error" id="ctCategoryError"></span>
+                    </div>
+
+                    <!-- Priority -->
+                    <div class="form-field">
+                        <label for="ctPriority">Priority <span class="required">*</span></label>
+                        <select id="ctPriority">
+                            <option value="">Select priority</option>
+                            <option value="1">High</option>
+                            <option value="2">Medium</option>
+                            <option value="3">Low</option>
+                        </select>
+                        <span class="field-error" id="ctPriorityError"></span>
+                    </div>
+
+                    <!-- Subject (only shown when category is Academic) -->
+                    <div class="form-field full" id="ctSubjectField" hidden>
+                        <label for="ctSubject">Subject <span class="required">*</span></label>
+                        <select id="ctSubject">
+                            <option value="">Select subject</option>
+                            <option value="1">ITAD</option>
+                            <option value="2">MLDP</option>
+                            <option value="3">FWEB</option>
+                            <option value="4">DVOPS</option>
+                            <option value="5">CMATH</option>
+                            <option value="6">PROCOMM</option>
+                            <option value="7">GL</option>
+                            <option value="8">SCA</option>
+                        </select>
+                        <span class="field-error" id="ctSubjectError"></span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="form-field full">
+                        <label for="ctStatus">Status <span class="required">*</span></label>
+                        <select id="ctStatus">
+                            <option value="">Select status</option>
+                            <option value="1">Overdue</option>
+                            <option value="2">Pending</option>
+                            <option value="3">Completed</option>
+                        </select>
+                        <span class="field-error" id="ctStatusError"></span>
+                    </div>
+
+                    <!-- End date -->
+                    <div class="form-field">
+                        <label for="ctEndDate">End Date <span class="required">*</span></label>
+                        <input type="date" id="ctEndDate">
+                        <span class="field-error" id="ctEndDateError"></span>
+                    </div>
+
+                    <!-- End time -->
+                    <div class="form-field">
+                        <label for="ctEndTime">End Time <span class="required">*</span></label>
+                        <input type="time" id="ctEndTime">
+                        <span class="field-error" id="ctEndTimeError"></span>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeCreateTaskModal()">Cancel</button>
+                    <button type="submit" id="createTaskSubmit" class="btn-primary">Create Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success message shown after a task is created -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- update modal (Wei Ye) -->
+    <div class="modal-wrapper" id="edit-modal">
+        <!-- header + close button -->
+        <div class="modal-header-wrapper">
+            <!-- Headers -->
+            <div class="modal-header-text">
+                <span>Update Task</span>
+            </div>
+            <!-- Close btn -->
+            <div style="position: absolute; right: 0px;">
+                <button onclick="closeEditButton()">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 
+                        4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 
+                        5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 
+                        18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 
+                        19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 
+                        6.31658 4.90237 5.68342 5.29289 5.29289Z" fill="#0F1729"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- input fields -->
+        <div class="edit-input-container">
+            <form id="editForm">
+                <!-- name -->
+                <div class="input-container">
+                    <label for="editName">Name</label>
+                    <input type="text" id="editName" placeholder="Enter Task Name" required>
+                </div>
+                <!-- category + subject -->
+                <div class="row-content">
+                    <!-- category -->
+                    <div class="input-container">
+                        <label for="editCategory">Category</label>
+                        <select name="categoryId" id="editCategory" onchange="showSubjects()" required>
+                            <option value="">Select category</option>
+                            <option value="1">Personal</option>
+                            <option value="2">Academic</option>
+                            <option value="3">Work</option>
+                            <option value="4">Errands</option>
+                            <option value="5">Entertainment</option>
+                        </select>
+                    </div>
+                    <!-- subject -->
+                    <div class="input-container" id="subject-container">
+                        <label for="editSubject">Subject</label>
+                        <select name="subjectId" id="editSubject">
+                            <option value="">Select Subject</option>
+                            <option value="1">ITAD</option>
+                            <option value="2">MLDP</option>
+                            <option value="3">FWEB</option>
+                            <option value="4">DVOPS</option>
+                            <option value="5">CMATH</option>
+                            <option value="6">PROCOMM</option>
+                            <option value="7">GL</option>
+                            <option value="8">SCA</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- priority + status -->
+                <div class="row-content">
+                    <!-- priority -->
+                    <div class="input-container">
+                        <label for="editPriority">Priority</label>
+                        <select name="priorityId" id="editPriority" required>
+                            <option value="">Select Subject</option>
+                            <option value="1">High</option>
+                            <option value="2">Medium</option>
+                            <option value="3">Low</option>
+                        </select>
+                    </div>
+                    <!-- status -->
+                    <div class="input-container">
+                        <label for="editStatus">Status</label>
+                        <select name="statusId" id="editStatus" required>
+                            <option value="">Select Status</option>
+                            <option value="1">Overdue</option>
+                            <option value="2">Pending</option>
+                            <option value="3">Completed</option>
+                        </select>
+                               </div>
+                </div>
+                <!-- end date + end time -->
+                <div class="row-content">
+                      <!-- end date -->
+                    <div class="input-container">
+                        <label for="editEndDate">End Date</label>
+                        <input type="date" id="editEndDate" required>
+                    </div>
+                    <!-- end time -->
+                    <div class="input-container">
+                        <label for="editEndTime">End Time</label>
+                        <input type="time" id="editEndTime" required>
+                    </div>
+                </div>
+                <!-- update task button -->
+                <div style="margin-top: 6%; display: flex; justify-content: center;">
+                    <button type="submit">
+                        Update Task
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- notification updated successfully -->
+    <div id="updatedNotificationContainer" style="display: none;">
+        <span>Task 
+            <span id="updatedTaskName"></span>
+            updated successfully.
+        </span>
+    </div>
+
 </body>
+
 </html>

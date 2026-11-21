@@ -82,16 +82,55 @@
                             </select>
                         </div>
 
-                        <!-- Filtering Dropdown -->
+                        <!-- Category Filter -->
                         <div class="control-group">
-                            <label for="filterSelect">Filter By:</label>
-                            <select id="filterSelect">
-                                <option value="all">All Tasks</option>
-                                <option value="category">Category</option>
-                                <option value="priority">Priority</option>
-                                <option value="status">Status</option>
-                                <option value="subject">Subject</option>
+                            <label for="categoryFilter">Category:</label>
+
+                            <select id="categoryFilter" onchange="filterTask()">
+                                <option value="">All Categories</option>
+                                <option value="1">Personal</option>
+                                <option value="2">Academic</option>
+                                <option value="3">Work</option>
+                                <option value="4">Errands</option>
+                                <option value="5">Entertainment</option>
                             </select>
+                        </div>
+
+                        <!-- Subject Filter: Only shown for Academic -->
+                        <div class="control-group" id="subjectFilterGroup"
+                            style="display: none;">
+                            <label for="subjectFilter">Subject:</label>
+
+                            <select id="subjectFilter" onchange="filterTask()">
+                                <option value="">All Subjects</option>
+                                <option value="1">ITAD</option>
+                                <option value="2">MLDP</option>
+                                <option value="3">FWEB</option>
+                                <option value="4">DVOPS</option>
+                                <option value="5">CMATH</option>
+                                <option value="6">PROCOMM</option>
+                                <option value="7">GL</option>
+                                <option value="8">SCA</option>
+                            </select>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div class="control-group">
+                            <label for="statusFilter">Status:</label>
+
+                            <select id="statusFilter" onchange="filterTask()">
+                                <option value="">All Statuses</option>
+                                <option value="1">Overdue</option>
+                                <option value="2">Pending</option>
+                                <option value="3">Completed</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Clear All Filters Button -->
+                        <div class="control-group">
+                            <button type="button" id="clearFiltersBtn" onclick="clearFilters()">
+                                Clear All Filters
+                            </button>
                         </div>
                     </div>
                 </div>

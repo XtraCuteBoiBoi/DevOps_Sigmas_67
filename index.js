@@ -11,7 +11,7 @@ app.use(express.static("./public"));
 const { searchTask } = require('./utils/AyersUtil');
 const { createTask } = require('./utils/JorellUtil');
 const { viewTasks, getTaskById, editTask } = require('./utils/WeiYeUtil');
-const { sortTasks } = require('./utils/JanaUtil');
+const { sortTasks, filterTasks } = require('./utils/JanaUtil');
 
 
 app.get('/', (req, res) => {
@@ -24,16 +24,14 @@ app.get('/tasks/search', searchTask);
 app.get('/view-tasks', viewTasks);
 // GET API with sorting functionality - Jana
 app.get('/tasks', sortTasks);
+// GET API but with filtering functionality: Jana
+app.get('/filter-tasks', filterTasks);
 // POST API - Create task: Jorell
 app.post('/create-task', createTask);
 // GET API (display 1 task) - Wei Ye
 app.get('/tasks/:id', getTaskById);
 // PUT API (update 1 task) - Wei Ye
 app.put('/tasks/:id', editTask);
-
-
-
-
 
 server = app.listen(PORT, function () {
     const address = server.address();

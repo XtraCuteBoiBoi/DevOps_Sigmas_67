@@ -79,6 +79,7 @@ project-root/
 │   └── task.template.json
 │
 ├── index.js
+├── .gitattributes
 ├── package.json
 └── README.md
 ```

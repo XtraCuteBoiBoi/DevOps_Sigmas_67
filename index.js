@@ -10,6 +10,7 @@ app.use(express.static("./public"));
 
 const { searchTask } = require('./utils/AyersUtil');
 const { createTask, deleteTask } = require('./utils/JorellUtil');
+const { createTask } = require('./utils/JorellUtil');
 const { viewTasks, getTaskById, editTask } = require('./utils/WeiYeUtil');
 const { sortTasks, filterTasks } = require('./utils/JanaUtil');
 
@@ -41,4 +42,5 @@ server = app.listen(PORT, function () {
     console.log(`Demo project at: ${baseUrl}`);
 });
 
+module.exports = { app, server }
 module.exports = { app, server }

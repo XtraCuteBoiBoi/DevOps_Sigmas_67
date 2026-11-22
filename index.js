@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 app.use(express.static("./public"));
 
 const { searchTask } = require('./utils/AyersUtil');
-const { createTask } = require('./utils/JorellUtil');
+const { createTask, deleteTask } = require('./utils/JorellUtil');
 const { viewTasks, getTaskById, editTask } = require('./utils/WeiYeUtil');
 const { sortTasks, filterTasks } = require('./utils/JanaUtil');
 
@@ -32,6 +32,8 @@ app.post('/create-task', createTask);
 app.get('/tasks/:id', getTaskById);
 // PUT API (update 1 task) - Wei Ye
 app.put('/tasks/:id', editTask);
+// DELETE API (delete 1 task) - Jorell (67)
+app.delete('/tasks/:id', deleteTask);
 
 server = app.listen(PORT, function () {
     const address = server.address();

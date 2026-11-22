@@ -131,7 +131,7 @@ function validateNewTask(body) {
 
 // Read the saved tasks. A missing file means there are no tasks yet.
 // An unreadable file throws, so we never overwrite data we could not understand.
-async function readSavedTasks() {
+async function readSavedTasks(action = 'creating tasks') {
     let data;
 
     try {
@@ -151,11 +151,11 @@ async function readSavedTasks() {
     try {
         tasks = JSON.parse(data);
     } catch (error) {
-        throw new Error('task.json contains invalid JSON. Please fix it before creating tasks.');
+        throw new Error(`task.json contains invalid JSON. Please fix it before ${action}.`);
     }
 
     if (!Array.isArray(tasks)) {
-        throw new Error('task.json has an invalid structure. Please fix it before creating tasks.');
+        throw new Error(`task.json has an invalid structure. Please fix it before ${action}.`);
     }
 
     return tasks;
@@ -195,4 +195,36 @@ async function createTask(req, res) {
     }
 }
 
-module.exports = { createTask, validateNewTask };
+// DELETE /tasks/:id
+// Deletes only the task whose id matches :id, every other task is left untouched
+async function deleteTask(req, res) {
+    try {
+        const id = toText(req.params.id);
+
+        // Task ids start with a lowercase "t" followed by numbers (e.g. t1795000000354269)
+        if (!/^t\d+$/.test(id)) {
+            return res.status(400).json({ message: 'Invalid task id. Please ensure you are deleting a task with a correct id format.' });
+        }
+
+        const tasks = await readSavedTasks('deleting tasks');
+
+        // Check that the requested id exists in task.json before deleting
+        const taskIndex = tasks.findIndex(task => String(task.id) === id);
+
+        if (taskIndex === -1) {
+            return res.status(404).json({ message: 'Task not found.' });
+        }
+
+        // Remove only that one task and save the rest back to task.json
+        const deletedTask = tasks.splice(taskIndex, 1)[0];
+        await fs.writeFile(TASK_FILE, JSON.stringify(tasks, null, 4));
+
+        return res.status(200).json({ message: 'Task deleted successfully', task: deletedTask });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = { createTask, deleteTask, validateNewTask };

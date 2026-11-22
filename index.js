@@ -8,29 +8,37 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("./public"));
 
+const { searchTask } = require('./utils/AyersUtil');
+const { createTask, deleteTask } = require('./utils/JorellUtil');
+const { viewTasks, getTaskById, editTask } = require('./utils/WeiYeUtil');
+const { sortTasks, filterTasks } = require('./utils/JanaUtil');
+
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + "/public/" + startPage);
 })
 
-// GET API - Wei Ye
-const { viewTasks } = require('./utils/WeiYeUtil');
-app.get('/view-tasks', viewTasks)
-
-// GET API but with sorting functionality: Jana
-const { sortTasks } = require('./utils/JanaUtil');
-app.get('/tasks', sortTasks); 
-
-
-
+// GET API (search tasks) - Ayers
+app.get('/tasks/search', searchTask);
+// GET API (display all tasks) - Wei Ye
+app.get('/view-tasks', viewTasks);
+// GET API with sorting functionality - Jana
+app.get('/tasks', sortTasks);
+// GET API but with filtering functionality: Jana
+app.get('/filter-tasks', filterTasks);
+// POST API - Create task: Jorell
+app.post('/create-task', createTask);
+// GET API (display 1 task) - Wei Ye
+app.get('/tasks/:id', getTaskById);
+// PUT API (update 1 task) - Wei Ye
+app.put('/tasks/:id', editTask);
+// DELETE API (delete 1 task) - Jorell (67)
+app.delete('/tasks/:id', deleteTask);
 
 server = app.listen(PORT, function () {
     const address = server.address();
     const baseUrl = `http://${address.address == "::" ? 'localhost' : address.address}:${address.port}`;
     console.log(`Demo project at: ${baseUrl}`);
 });
-
-// POST API - Create task: Jorell
-const { createTask } = require('./utils/JorellUtil');
-app.post('/create-task', createTask);
 
 module.exports = { app, server }

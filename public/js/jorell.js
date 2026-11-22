@@ -247,3 +247,217 @@ async function submitCreateTask(event) {
         submitBtn.disabled = false;
     }
 }
+
+// ===== Delete Task (Jorell) =====
+// Self-contained: it does not call or edit anyone else's JS/HTML/CSS.
+// It adds the delete buttons, the confirmation pop-out and its styles by itself.
+
+// Id of the task waiting for the user to confirm its deletion
+var dtTaskId = null;
+
+// ---------- Styles for the delete pop-out (only what styles.css does not already have) ----------
+
+(function addDeleteTaskStyles() {
+    var style = document.createElement('style');
+    style.textContent =
+        '.modal-small { max-width: 420px; }' +
+        '.modal-message { font-size: 15px; line-height: 1.5; word-break: break-word; }' +
+        '.btn-danger { padding: 11px 18px; border: none; border-radius: 8px; background-color: #b90202;' +
+        ' color: #ffffff; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }' +
+        '.btn-danger:hover { background-color: #8f0101; }' +
+        '.btn-danger:disabled { opacity: 0.6; cursor: not-allowed; }';
+    document.head.appendChild(style);
+})();
+
+// ---------- Confirmation pop-out (built here so index.html does not need to change) ----------
+
+(function buildDeleteTaskModal() {
+    var overlay = document.createElement('div');
+    overlay.id = 'deleteTaskOverlay';
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML =
+        '<div class="modal modal-small" role="alertdialog" aria-modal="true" aria-labelledby="deleteTaskTitle" aria-describedby="deleteTaskMessage">' +
+        '<div class="modal-header">' +
+        '<div>' +
+        '<h2 id="deleteTaskTitle">Delete Task</h2>' +
+        '<p>This action cannot be undone</p>' +
+        '</div>' +
+        '<button type="button" class="modal-close" id="deleteTaskClose" aria-label="Close">' +
+        '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M6 6L18 18M18 6L6 18" stroke="#20352c" stroke-linecap="round" stroke-linejoin="round" />' +
+        '</svg>' +
+        '</button>' +
+        '</div>' +
+        '<p id="deleteTaskError" class="form-banner-error" hidden></p>' +
+        '<p id="deleteTaskMessage" class="modal-message">Are you sure you want to delete <strong id="deleteTaskName"></strong>?</p>' +
+        '<div class="modal-actions">' +
+        '<button type="button" id="deleteTaskCancel" class="btn-secondary">Cancel</button>' +
+        '<button type="button" id="deleteTaskConfirm" class="btn-danger">Delete Task</button>' +
+        '</div>' +
+        '</div>';
+    document.body.appendChild(overlay);
+
+    document.getElementById('deleteTaskClose').addEventListener('click', closeDeleteTaskModal);
+    document.getElementById('deleteTaskCancel').addEventListener('click', closeDeleteTaskModal);
+    document.getElementById('deleteTaskConfirm').addEventListener('click', confirmDeleteTask);
+})();
+
+// ---------- Delete button in every table row ----------
+
+var DT_TRASH_ICON =
+    '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M3 6H21M8 6V4C8 3.44772 8.44772 3 9 3H15C15.5523 3 16 3.44772 16 4V6M19 6L18.2 19.2C18.1 20.7 17 21.5 15.6 21.5H8.4C7 21.5 5.9 20.7 5.8 19.2L5 6M10 11V17M14 11V17" ' +
+    'stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</svg>';
+
+// Add a delete button to every row that does not have one yet.
+// The task id is read from the edit button already in the row (its restId attribute).
+function addDeleteButtons() {
+    var rows = document.querySelectorAll('#taskTableBody tr');
+
+    rows.forEach(function (row) {
+        if (row.querySelector('.delete-task-btn')) {
+            return;
+        }
+
+        var editBtn = row.querySelector('button[restId]');
+        if (!editBtn) {
+            return;
+        }
+
+        var wrapper = document.createElement('div');
+        wrapper.innerHTML = '<button type="button" class="action-btn delete-task-btn" aria-label="Delete task">' + DT_TRASH_ICON + '</button>';
+        wrapper.firstChild.setAttribute('data-task-id', editBtn.getAttribute('restId'));
+
+        // Put it next to the edit button
+        editBtn.parentElement.parentElement.appendChild(wrapper);
+    });
+}
+
+// The table is redrawn every time the task list loads, sorts, filters or searches,
+// so watch it and re-add the buttons each time.
+(function watchTaskTable() {
+    var tableBody = document.getElementById('taskTableBody');
+
+    new MutationObserver(addDeleteButtons).observe(tableBody, { childList: true });
+    addDeleteButtons();
+
+    // One click listener for all delete buttons
+    tableBody.addEventListener('click', function (event) {
+        var btn = event.target.closest('.delete-task-btn');
+        if (btn) {
+            openDeleteTaskModal(btn);
+        }
+    });
+})();
+
+// ---------- Open / close ----------
+
+function openDeleteTaskModal(btn) {
+    dtTaskId = btn.getAttribute('data-task-id');
+
+    // The task name is the 2nd column of the row
+    var nameCell = btn.closest('tr').children[1];
+    var name = nameCell ? nameCell.textContent.trim() : '';
+
+    // innerText (not innerHTML) so a task name can never be treated as HTML
+    document.getElementById('deleteTaskName').innerText = name ? '"' + name + '"' : 'this task';
+    clearDeleteTaskError();
+
+    document.getElementById('deleteTaskOverlay').classList.add('open');
+    // Focus Cancel so pressing Enter never deletes by accident
+    document.getElementById('deleteTaskCancel').focus();
+}
+
+function closeDeleteTaskModal() {
+    document.getElementById('deleteTaskOverlay').classList.remove('open');
+    clearDeleteTaskError();
+    dtTaskId = null;
+}
+
+// Pressing Esc also closes the delete pop-out
+document.addEventListener('keydown', function (event) {
+    var overlay = document.getElementById('deleteTaskOverlay');
+
+    if (event.key === 'Escape' && overlay && overlay.classList.contains('open')) {
+        closeDeleteTaskModal();
+    }
+});
+
+function showDeleteTaskError(message) {
+    var banner = document.getElementById('deleteTaskError');
+    banner.innerText = message;
+    banner.hidden = false;
+}
+
+function clearDeleteTaskError() {
+    var banner = document.getElementById('deleteTaskError');
+    banner.innerText = '';
+    banner.hidden = true;
+}
+
+// ---------- Confirm ----------
+
+// Send DELETE /tasks/:id, then reload the page so the table shows the saved tasks
+async function confirmDeleteTask() {
+    if (dtTaskId === null) {
+        return;
+    }
+
+    var confirmBtn = document.getElementById('deleteTaskConfirm');
+    // Prevent double clicks while waiting for the server
+    confirmBtn.disabled = true;
+    clearDeleteTaskError();
+
+    try {
+        var response = await fetch('/tasks/' + encodeURIComponent(dtTaskId), { method: 'DELETE' });
+
+        var data = await response.json().catch(function () {
+            return {};
+        });
+
+        if (response.status === 200) {
+            rememberDeleteMessage('Task "' + data.task.name + '" deleted successfully.');
+            window.location.reload();
+            return;
+        }
+
+        // Task is already gone from task.json (e.g. deleted in another tab)
+        if (response.status === 404) {
+            rememberDeleteMessage('Task not found. It may have already been deleted.');
+            window.location.reload();
+            return;
+        }
+
+        showDeleteTaskError(data.message || 'Unable to delete the task. Please try again.');
+
+    } catch (error) {
+        console.error('Error:', error);
+        showDeleteTaskError('Unable to reach the server. Please try again.');
+    } finally {
+        confirmBtn.disabled = false;
+    }
+}
+
+// ---------- Success message (survives the page reload) ----------
+
+function rememberDeleteMessage(message) {
+    try {
+        sessionStorage.setItem('deleteTaskMessage', message);
+    } catch (error) {
+        // Storage not available: the task is still deleted, only the message is skipped
+    }
+}
+
+(function showSavedDeleteMessage() {
+    try {
+        var message = sessionStorage.getItem('deleteTaskMessage');
+
+        if (message) {
+            sessionStorage.removeItem('deleteTaskMessage');
+            showCreateTaskToast(message);
+        }
+    } catch (error) {
+        // Storage not available: nothing to show
+    }
+})();
